@@ -220,6 +220,10 @@ In addition to collecting telemetry, Fabrikam not only seeks to gain competitive
 
 6. We want to understand the ways in which we can scale the solution to accommodate future growth in terms of number of customers, meters, and the size of the data.
 
+7. We want the ability to monitor and visualize our entire IoT solution, including querying the current state of deployed assets.
+
+8. We want the ability to identify the physical location of IoT devices in each building to identify usage trends and to locate devices should physical maintenance be required.
+
 ### Customer objections
 
 1. We are considering an out-of-the-box time series database solution. Are there options for this on Azure?
@@ -231,6 +235,8 @@ In addition to collecting telemetry, Fabrikam not only seeks to gain competitive
 4. We have heard of Azure IoT Central; does this offer a good starting point for us?
 
 5. Some of our customers require their IoT devices to communicate in a firewall-friendly way without opening up additional incoming or outgoing ports. What options do we have to accomplish this?
+
+6. We need a way to query all IoT devices based on their current properties and relationships. How can we accomplish this?
 
 ### Infographic of common scenarios
 
@@ -274,6 +280,8 @@ _Device to cloud communication_
 
    - What service endpoints do the devices talk to?
 
+4. Some IoT devices may not have the capability to connect to Azure directly, what is a possible solution to this problem?
+
 _Device provisioning_
 
 1. Fabrikam is planning a large rollout of smart meters in batches of 1000. They desire a simplified provisioning process that does not involve having a device administrator manually creating each device in the backend and then manually configuring the hardware. They want the device to identify and register itself automatically once installed. What Azure service should they use to accomplish this?
@@ -297,6 +305,10 @@ The "hot" path for Fabrikam is defined as the processing of the data as it arriv
 4. How would you store the "hot" data for consumption by the web dashboard?
 
    - Estimate the write throughput you would require. Does your selected store support it?
+
+5. How does your solution support ad-hoc queries of the real-time state of devices across the solution?
+
+6. What Azure service do you recommend to create building maps to pinpoint the location of deployed IoT devices?
 
 _"Cold" path processing_
 
@@ -361,8 +373,11 @@ Directions: Tables reconvene with the larger group to hear the facilitator/SME s
 |                         |                                                                                       |
 | ----------------------- | ------------------------------------------------------------------------------------- |
 | **Description**         | **Links**                                                                             |
+| IoT for Beginners | <https://github.com/microsoft/IoT-For-Beginners> |
 | IoT Hubs                | <https://azure.microsoft.com/documentation/articles/iot-hub-devguide/>                |
 | IoT Hub Message Routing | <https://docs.microsoft.com/azure/iot-hub/tutorial-routing>                           |
+| IoT Edge | <https://docs.microsoft.com/en-us/azure/iot-edge/about-iot-edge> |
+| IoT Edge Gateways | <https://docs.microsoft.com/en-us/azure/iot-edge/iot-edge-as-gateway> |
 | Event Hubs              | <https://azure.microsoft.com/documentation/articles/event-hubs-overview/>             |
 | Stream Analytics        | <https://azure.microsoft.com/documentation/articles/stream-analytics-introduction/>   |
 | Data Factory            | <https://azure.microsoft.com/documentation/articles/data-factory-introduction/>       |
@@ -370,6 +385,11 @@ Directions: Tables reconvene with the larger group to hear the facilitator/SME s
 | Hive                    | <https://azure.microsoft.com/documentation/articles/hdinsight-use-hive/>              |
 | Spark                   | <https://azure.microsoft.com/documentation/articles/hdinsight-apache-spark-overview/> |
 | Azure Databricks        | <https://azure.microsoft.com/services/databricks/>                                    |
+| Azure Digital Twins     | <https://docs.microsoft.com/en-us/azure/digital-twins/overview> |
+| Query the Azure Digital Twins twin graph | <https://docs.microsoft.com/en-us/azure/digital-twins/how-to-query-graph> |
+| MCW Leveraging Azure Digital Twins in a supply chain | <https://github.com/microsoft/MCW-Leveraging-Azure-Digital-Twins-in-a-supply-chain> |
+| MCW Predictive Maintenance for remote field devices | <https://github.com/microsoft/MCW-Predictive-Maintenance-for-remote-field-devices> |
+| MCW Securing Azure IoT Solutions | <https://github.com/microsoft/MCW-Securing-Azure-IoT-solutions> |
 
 # Internet of Things whiteboard design session trainer guide
 
@@ -590,6 +610,10 @@ _Cloud to device communication_
    - This workflow happens transparently, reducing or eliminating additional code on both the device and service side.
 
    ![Diagram showing communication between devices and services using Device Streams.](media/iot-hub-device-streams.png 'Device Streams')
+
+6. We need a way to query all IoT devices based on their current properties and relationships. How can we accomplish this?
+
+   When an IoT solution is modeled with the Azure Digital Twins service, a queryable twins graph is constructed based on the digital twins and the relationships between them. This twins graph provides rich visualizations of the environment (with the assistance of Azure Digital Twins Explorer), and is also queryable. Ad-hoc queries are performed using Azure Digital Twins query language and can retrieve digital twins according to their properties (including tag properties), models, relationships, and properties of the relationships.
 
 ## Customer quote (to be read back to the attendees at the end)
 

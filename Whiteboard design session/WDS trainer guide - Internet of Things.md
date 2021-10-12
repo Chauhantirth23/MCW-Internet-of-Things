@@ -387,6 +387,7 @@ Directions: Tables reconvene with the larger group to hear the facilitator/SME s
 | Azure Databricks        | <https://azure.microsoft.com/services/databricks/>                                    |
 | Azure Digital Twins     | <https://docs.microsoft.com/en-us/azure/digital-twins/overview> |
 | Query the Azure Digital Twins twin graph | <https://docs.microsoft.com/en-us/azure/digital-twins/how-to-query-graph> |
+| Azure Maps Indoor Maps Module | <https://docs.microsoft.com/en-us/azure/azure-maps/how-to-use-indoor-module> |
 | MCW Leveraging Azure Digital Twins in a supply chain | <https://github.com/microsoft/MCW-Leveraging-Azure-Digital-Twins-in-a-supply-chain> |
 | MCW Predictive Maintenance for remote field devices | <https://github.com/microsoft/MCW-Predictive-Maintenance-for-remote-field-devices> |
 | MCW Securing Azure IoT Solutions | <https://github.com/microsoft/MCW-Securing-Azure-IoT-solutions> |
@@ -481,6 +482,10 @@ _Device to cloud communication_
 
    ![the Device to cloud communication diagram starts with Smart meters. Messages are sent to an IoT Hub via: HTTPS, POST, AMQP, AMQP over WebSockets, MQTT, and MQTT over WebSockets.](./media/device-to-cloud-communication.png 'Device to cloud communication diagram')
 
+4. Some IoT devices may not have the capability to connect to Azure directly, what is a possible solution to this problem?
+
+   Some IoT devices may not be equipped with internet connectivity to send telemetry directly to the cloud. In this instance, a field gateway device is required to do a protocol translation to send the data to the cloud. IoT Edge gateways can be deployed on-premises that are able to communicate natively with the IoT device (such as with Bluetooth or Zigbee) and forward those messages to the cloud. IoT Edge gateways may also be equipped with modules that perform aggregation, filtering, and decision making on telemetry data at the edge. Some benefits of IoT Edge gateways are analytics at the edge, downstream device isolation, connection multiplexing, traffic smoothing, and offline support.
+
 _Device provisioning_
 
 1. Fabrikam is planning a large rollout of smart meters in batches of 1000. They desire a simplified provisioning process that does not involve having a device administrator manually creating each device in the backend and then manually configuring the hardware. They want the device to identify and register itself automatically once installed. What Azure service should they use to accomplish this?
@@ -550,6 +555,14 @@ _"Hot" path processing_
    If Stream Analytics was used, then you could store the hot data in SQL DB or expose a real-time dataset to a Power BI dashboard. Using Storm, your options broaden to SQL DB or HBase, but SQL DB would still be the preferred option because it would require more development for the Web Dashboard to "join" additional data to the telemetry that is used in the reports (such as friendly device names, labels, and so on).
 
    When averaged to a 5-minute window per device, the write requirement becomes very low \~0.06 MB/s. SQL DB S0 or higher could easily handle this load.
+
+5. How does your solution support ad-hoc queries of the real-time state of devices across the solution?
+
+   The Azure Digital Twins service creates a twin graph of the IoT environment. This twin graph is queryable with the Azure Digital Twins query language.
+
+6. What Azure service do you recommend to create building maps to pinpoint the location of deployed IoT devices?
+
+   The Azure Maps service provides the Azure Maps Indoor Maps module that allows for the definition and rendering of indoor maps. This module supports multiple facilities and levels. Indoor maps can augment the solution by pinning the location of devices, in other situations, it could also be leveraged with beacons to indicate the current location of devices in motion.
 
 _"Cold" path processing_
 

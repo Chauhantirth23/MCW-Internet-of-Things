@@ -197,7 +197,7 @@ Creating an enrollment group enables Fabrikam to allow devices to self-register.
     - **Auto-generate keys**: Checked.
     - **IoT Edge device**: Select `False`.
     - **Select how you want to assign devices to hubs**: Select `Evenly weighted distribution`.
-    - **Select the IoT hubs this group can be assigned to**: Select `smartmeter-hub-{SUFFIX}`.
+    - **Select the IoT hubs this group can be assigned to**: Select `smartmeter-hub-{SUFFIX}.azure-devices.net`.
     - **Select how you want the device data to be handled on re-provisioning**: Select `Re-provision and migrate data`.
     - **Initial Device Twin State**: Retain the default value.
     - **Enable entry**: Select `Enable`.
@@ -225,6 +225,8 @@ Fabrikam has left you a partially completed sample in the form of the Smart Mete
    ![On the Visual Studio View menu, Task List is selected.](media/visual-studio-view-menu-task-list.png 'Visual Studio View menu')
 
 3. In the **Task List**, you will see a list of **TODO** tasks, where each task represents one line of code that needs to be completed. Complete the line of code below each **TODO** using the code below as a reference. If your task list is blank, complete TODO steps 1-5 as indicated in the code in the next step.
+
+    >**Note**: Sometimes the Task List will not populate, this will not impact completing this lab.
 
 4. The following code represents the completed tasks in **DeviceManager.cs**:
 
@@ -559,7 +561,7 @@ In this task, you will build and run the Smart Meter Simulator project.
 
    ![On the IoT Hub blade, in the Explorers section, under Explorers, IoT Devices is highlighted.](media/iot-hub-explorers-iot-devices.png 'IoT Hub blade, Explorers section')
 
-7. You should see all your registered devices listed having a status of **enabled**.
+7. You should see the selected devices listed having a status of **Enabled**.
 
    ![Devices in the Device ID list have a status of either enabled or disabled.](media/iot-hub-iot-devices-list.png 'Device ID list')
 
@@ -639,7 +641,7 @@ Fabrikam would like to visualize the "hot" data showing the average temperature 
 10. Once authorized, enter the following:
 
     - **Output alias**: Set to `powerbi`
-    - **Group Workspace**: Select the default, **My Workspace**.
+    - **Group Workspace**: Select the default, **My workspace**.
     - **Authentication mode**: Select **User token**.
     - **Dataset Name**: Enter `avgtemps`
     - **Table Name**: Enter `avgtemps`
@@ -758,9 +760,9 @@ Fabrikam would like to be able to capture all the "cold" data into scalable stor
 
    ![The Create storage account blade is displayed, with the previously mentioned settings entered into the appropriate fields.](media/storage-account-create-new.png 'Create storage account')
 
-3. Select the **Advanced** tab, select the following:
+3. Select the **Advanced** tab, verify the following:
 
-   - **Secure transfer required**: Unchecked.
+   - **Require secure transfer for REST API operations**: Unchecked.
 
    ![The Create storage account blade is displayed with options under the Advanced tab.](media/storage-account-create-new-advanced.png 'Create storage account - Advanced')
 
@@ -768,9 +770,9 @@ Fabrikam would like to be able to capture all the "cold" data into scalable stor
 
 5. Once validation has passed, select **Create**.
 
-6. Once provisioned, navigate to your storage account, select **Access keys** from the left-hand menu, and copy the **key1** Key value into a text editor, such as Notepad, for later use.
+6. Once provisioned, navigate to your storage account, select **Access keys** from the left-hand menu, select **Show keys** from the top toolbar, then copy the **key1** Key value into a text editor, such as Notepad, for later use.
 
-   ![The Access Keys blade is displayed and the key1 copy button is highlighted.](media/storage-account-key.png 'Storage account - Keys')
+   ![The Access Keys blade is displayed with the key1 copy button is highlighted.](media/storage-account-key.png 'Storage account - Keys')
 
 ### Task 2: Create the Stream Analytics job for cold path processing
 
@@ -913,6 +915,8 @@ In this task, you will create a new Databricks notebook to perform some processi
    ![On the Azure Databricks Service blade, the Launch Workspace button is highlighted.](media/azure-databricks-launch-workspace.png 'Launch Azure Databricks Workspace')
 
 2. On the **Azure Databricks** landing page, create a new notebook by selecting **New Notebook** under **Common Tasks**.
+
+    ![The Azure Databricks landing page displays with New Notebook highlighted beneath the Common Tasks heading.](media/dbrix_commontasks_newnotebook.png "New Notebook")
 
 3. In the **Create Notebook** dialog, enter `smartmeters` as the **Name** and select **Python** as the **Language**, then select **Create**.
 

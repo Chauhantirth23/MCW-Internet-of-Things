@@ -118,10 +118,6 @@ In this task, you will provision a virtual machine running Visual Studio Communi
 
    - **Selected inbound ports**: Select **RDP (3389)** from the drop down.
 
-   - **License type**: Select **Windows client**.
-
-   - Check the confirmation checkbox.
-
      ![The Create virtual machine form is shown with fields set to the previously mentioned settings.](media/virtual-machine.png 'Create virtual machine form')
 
    - Select **Review + create** to move to the next step.
@@ -172,9 +168,9 @@ In this task, you will create an Azure Databricks cluster within the workspace y
 
    ![On the Azure Databricks Service blade, the Launch Workspace button is highlighted.](media/azure-databricks-launch-workspace.png 'Launch Azure Databricks Workspace')
 
-3. In the new browser window that opens, select **Clusters** from the left-hand navigation menu, then select **+Create Cluster**.
+3. In the new browser window that opens, select **Compute** from the left-hand navigation menu, then select **+ Create Cluster**.
 
-   ![In the Azure Databricks workspace, Clusters in highlighted in the left-hand navigation menu, and the +Create Cluster button is highlighted.](media/azure-databricks-clusters-create.png 'Create new Databricks cluster')
+   ![In the Azure Databricks workspace, the Compute item is highlighted in the left-hand navigation menu, and the + Create Cluster button is highlighted.](media/azure-databricks-clusters-create.png 'Create new Databricks cluster')
 
 4. On the **Create Cluster** page, enter `iot-cluster-SUFFIX` for the **Cluster Name**, leave the remaining values to their defaults, and select **Create Cluster**.
 

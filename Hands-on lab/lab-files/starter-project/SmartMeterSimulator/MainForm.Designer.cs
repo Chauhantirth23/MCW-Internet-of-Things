@@ -586,8 +586,8 @@
             this.txtGroupEnrollmentKey.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             this.txtGroupEnrollmentKey.Size = new System.Drawing.Size(470, 25);
             this.txtGroupEnrollmentKey.TabIndex = 38;
-            this.txtGroupEnrollmentKey.Text = "y049uC8uXA3lFOajcti3+EVUdbYECLjQ4pmJdna6sylPIvitW5Lsf2s1WNUenBUixvqGdK6E/Stv/9jl1" +
-    "cvjRg==";
+            this.txtGroupEnrollmentKey.Text = "7C9PdSulGhMgOS8/n8aUsUURI+gk2l6w34FtmRKC1GsVIqzVscLxu/eB2Vxbge7o4HKHM4hzMV3o8xa96" +
+    "wg9Yg==";
             // 
             // txtIdScope
             // 
@@ -598,7 +598,7 @@
             this.txtIdScope.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             this.txtIdScope.Size = new System.Drawing.Size(470, 25);
             this.txtIdScope.TabIndex = 40;
-            this.txtIdScope.Text = "0ne002CBFCE";
+            this.txtIdScope.Text = "0ne003F5592";
             // 
             // lblIdScope
             // 

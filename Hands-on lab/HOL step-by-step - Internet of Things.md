@@ -53,6 +53,7 @@ Microsoft and the trademarks listed at <https://www.microsoft.com/en-us/legal/in
   - [Exercise 5: Implement an IoT Edge Gateway](#exercise-5-implement-an-iot-edge-gateway)
     - [Task 1: Provision the IoT Edge device with the Azure IoT Hub Device Provisioning Service (DPS)](#task-1-provision-the-iot-edge-device-with-the-azure-iot-hub-device-provisioning-service-dps)
     - [Task 2: Deploy a Linux server as an IoT Edge device](#task-2-deploy-a-linux-server-as-an-iot-edge-device)
+    - [Task 3: Configure the IoT Edge Device as a Gateway](#task-3-configure-the-iot-edge-device-as-a-gateway)
   - [After the hands-on lab](#after-the-hands-on-lab)
     - [Task 1: Delete the resource group](#task-1-delete-the-resource-group)
 
@@ -1286,6 +1287,36 @@ The IoT Edge runtime can be installed on various form factors, from small develo
 23. In the Azure Portal, open the lab resource group and select the **smartmeter-hub-{suffix}** IoT Hub. Verify the IoT Edge device successfully registered through the DPS by selecting **IoT Edge** from the left menu and finding **edge-vm** in the listing.
 
     ![The IoT Hub screen displays with IoT Edge selected from the left menu and edge-vm highlighted in the IoT Edge Devices listing.](media/iothub_edgevm.png "Azure IoT Edge Devices Listing")
+
+24. In order for downstream devices to communicate with the IoT Edge Gateway using MQTT protocol, port 1883 needs to be opened in the Ubuntu firewall. Open port 1883 by executing the following command in the cloud shell.
+
+    ```Bash
+    sudo ufw allow 1883
+    ```
+
+### Task 3: Configure the IoT Edge Device as a Gateway
+
+To configure edge-vm as an IoT Edge Gateway the edgeHub IoT Edge module needs to be configured by having its routing defined. The route defined will be setup to forward all downstream device messages to IoT Hub. IoT Edge modules can be configured and deployed to devices via the IoT Hub.
+
+1. In the Azure Portal, open the lab resource group and select the **smartmeter-hub-{SUFFIX}** IoT Hub resource.
+
+2. From the left menu, select **IoT Edge**, then select **edge-vm** from the list of devices. Notice that the IoT Edge Runtime response indicates the deployment configuration is not set, and the $edgeHub module is not running - this will soon change.
+
+3. On the **edge-vm** screen, select **Set modules** from the top toolbar menu.
+
+    ![The edge-vm screen displays with the Set modules button highlighted in the toolbar menu.](media/iotedge_setmodules.png "Set IoT Edge modules")
+
+4. On the **Set modules on device: edge-vm** screen, select the **Routes** tab and establish the following route. Once complete, select **Review + Create**, then **Create** on the review screen.
+
+   | Route Name | Route Value | Description |
+   |------------|-------------|-------------|
+   | allDownstreamToIoTHub |FROM /messages/* WHERE NOT IS_DEFINED ($connectionModuleId) INTO $upstream | When a message is received from a downstream device, the $connectionModuleId value is blank. The $connectionModuleId value is only set on messages originating from other IoT Edge modules. This route value filters all messages and forwards on those originating from downstream devices. |
+
+    ![The Set Modules screen displays with the Routes tab selected and the preceding route.](media/iotedge_setmodules_routes.png "IoT Edge Routes")
+
+5. Wait a few moments and refresh the **edge-vm** screen. Note that the IoT Edge Runtime Response now displays **200 -- OK** and the $edgeHub module is now running.
+
+    ![The edge-vm screen displays with the IoT Edge Runtime Response displaying a status of 200 and the $edgeHub module displays as running.](media/iotedge_runtime200_edgehubrunning.png "edge-vm status")
 
 ## After the hands-on lab
 

@@ -50,6 +50,12 @@ Microsoft and the trademarks listed at <https://www.microsoft.com/en-us/legal/in
   - [Exercise 5: Sending commands to the IoT devices](#exercise-5-sending-commands-to-the-iot-devices)
     - [Task 1: Add your IoT Hub connection string to the CloudToDevice console app](#task-1-add-your-iot-hub-connection-string-to-the-cloudtodevice-console-app)
     - [Task 2: Send cloud-to-device messages](#task-2-send-cloud-to-device-messages)
+  - [Exercise 5: Implement an IoT Edge Gateway](#exercise-5-implement-an-iot-edge-gateway)
+    - [Task 1: Install Hyper-V on the lab virtual machine](#task-1-install-hyper-v-on-the-lab-virtual-machine)
+    - [Task 2: Install a virtual switch on LabVM](#task-2-install-a-virtual-switch-on-labvm)
+    - [Task 3: Install Windows Admin Center](#task-3-install-windows-admin-center)
+    - [Task 4: Provision the IoT Edge device with the Azure IoT Hub Device Provisioning Service (DPS)](#task-4-provision-the-iot-edge-device-with-the-azure-iot-hub-device-provisioning-service-dps)
+    - [Task 5: Install Azure IoT Edge for Linux on Windows](#task-5-install-azure-iot-edge-for-linux-on-windows)
   - [After the hands-on lab](#after-the-hands-on-lab)
     - [Task 1: Delete the resource group](#task-1-delete-the-resource-group)
 
@@ -1116,6 +1122,188 @@ In this task, you will leave the simulator running and separately launch the con
 
 6. In the console window, you can enter `Y` to send another message. Experiment with setting the temperature on other devices and observe the results.
 
+## Exercise 5: Implement an IoT Edge Gateway
+
+Duration: 120 minutes
+
+An IoT Edge Gateway device provides a connection between other devices on the network and the IoT Hub. Edge Gateway devices can be classified as a transparent or translation gateway.
+
+In a transparent gateway scenario, the IoT Edge hub module itself acts as IoT Hub, it handles connections from other devices that have an identity with the same IoT hub. This type of gateway pattern is called transparent because messages pass from downstream devices to the IoT Hub as though there were not a gateway between them.
+
+A translation gateway provides a connection to the IoT hub for devices that don't or can't connect to IoT Hub on their own, such as with devices that communicate over Bluetooth or Zigbee. This type of gateway pattern is called translation because the IoT Edge device has to perform processing on incoming device messages before they can be forwarded to the IoT Hub. These scenarios require additional modules on the IoT Edge gateway to handle the messaging protocol translation..
+
+The transparent and translation gateway patterns are not mutually exclusive. A single IoT Edge device can function as both a transparent gateway and a translation gateway.
+
+In one customer building, Fabrikam would like to establish a transparent IoT Edge Gateway to provide downstream device isolation and to deal with isolated internet outages. In this scenario, all communication from the building's IoT devices will be sent to IoT Hub via the gateway device, and when there is no internet connection, all telemetry will be held by the gateway device until connectivity is restored.
+
+In this exercise, you will establish the LabVM as an IoT Edge transparent gateway and configure IoT devices to communicate through the gateway.
+
+### Task 1: Install Hyper-V on the lab virtual machine
+
+The IoT Edge runtime requires Hyper-V be installed on Windows-based operating systems.
+
+1. Connect to **LabVM**, select the start button and type `powershell`.
+
+2. Right-click on the **Windows PowerShell** item, then select **Run as administrator**.
+
+    ![The Windows start button is expanded with powershell entered into the search box and the Windows Powershell item's context menu showing with the Run as administrator item selected.](media/powershell_runasadministrator_menu.png "Run Windows PowerShell as administrator")
+
+3. At the PowerShell prompt, enter the following command to install Hyper-V on the virtual machine.
+
+    ```PowerShell
+    Install-WindowsFeature -Name Hyper-V -IncludeManagementTools
+    ```
+
+4. Restart the LabVM virtual machine to complete the installation process. Please allow enough time for the reboot to complete and then reconnect to the LabVM.
+
+### Task 2: Install a virtual switch on LabVM
+
+Windows Server does not have a virtual switch created and enabled by default, so we must do this manually on LabVM. This virtual switch is required to run IoT Edge for Linux on a Windows device.
+
+>**Note**: Windows Desktop operating systems have this functionality out of the box.
+
+1. In **LabVM**, run Windows PowerShell as administrator once again.
+
+2. Run the following command to create a virtual machine switch.
+
+    ```PowerShell
+    New-VMSwitch -Name "iotedgevmswitch" -SwitchType Internal
+    ```
+
+3. Get the interface index of the created switch by executing the following. This execution will output a numeric index.
+
+    ```PowerShell
+    (Get-NetAdapter -Name '*iotedgevmswitch*').ifIndex
+    ```
+
+4. Using the interface index retrieved in the previous step, output the IP address information using the following command. Replace `{ifIndex}` with the numeric value output in the previous step. Record the IP Address value of the virtual switch.
+
+    ```PowerShell
+    Get-NetIPAddress -AddressFamily IPv4  -InterfaceIndex {ifIndex}
+    ```
+
+    ![A PowerShell command window displays with the preceding command, the IP Address value is highlighted in the output.](media/powershell_virtualswitchipaddress.png "Virtual Switch IP Address")
+
+5. Next, establish a new gateway IP address. To do this, replace the last octet of the virtual switch IP with `1`. As an example, if the ip address of the virtual switch is `169.254.196.168`, then the gateway IP would be `169.254.196.1`. Establish the gateway IP with the following command, replace the {gatewayIp} value with the new IP and the {ifIndex} value with the numeric interface index obtained earlier.
+
+    ```PowerShell
+    New-NetIPAddress -IPAddress {gatewayIp} -PrefixLength 24 -InterfaceIndex {ifIndex}
+    ```
+
+6. Create a Network Address Translation (NAT) object that translates an internal network address to an external network. This IP will take the virtual switch IP and replace the last octet with the value `0`. As an example, if the ip address of the virtual switch is `169.254.196.168`, then the NAT object IP would be `169.254.196.0`. Establish the NAT object with the following command, replacing the {natIp} with the new IP.
+
+    ```PowerShell
+    New-NetNat -Name "iotedgevmswitch" -InternalIPInterfaceAddressPrefix "{natIp}/24"
+    ```
+
+7. Install DHCP on the virtual machine using the following command.
+
+    ```PowerShell
+    Install-WindowsFeature -Name 'DHCP' -IncludeManagementTools
+    ```
+
+8. Add the DHCP server to the default local security group by issuing the following command.
+
+   ```PowerShell
+   netsh dhcp add securitygroups
+   ```
+
+9. Restart the DHCP service by executing the following command.
+
+    ```PowerShell
+    Restart-Service dhcpserver
+    ```
+
+10. Configure the DHCP server scope. Using the virtual switch IP, set the starting IP with the last octet replaced by `100` and the ending IP with the last octet replaced by `200`, this will allow the DHCP server to assign 100 IP addresses. Configure the DCHP server scope by issuing the following command, replacing {startIp} and {endIp} accordingly.
+
+    ```PowerShell
+    Add-DhcpServerV4Scope -Name "AzureIoTEdgeScope" -StartRange {startIp} -EndRange {endIp} -SubnetMask 255.255.255.0 -State Active
+    ```
+
+11. The following command will assign the NAT object and gateway IP to the DHCP server. Replace {natIp} and {gatewayIp} accordingly.
+
+    ```PowerShell
+    Set-DhcpServerV4OptionValue -ScopeID {natIp} -Router {gatewayIp}
+    ```
+
+12. Restart the DHCP service once more for the changes to take effect.
+
+    ```PowerShell
+    Restart-service dhcpserver
+    ```
+
+### Task 3: Install Windows Admin Center
+
+Windows Admin Center delivers a user interface that allows for the installation and management of IoT Edge on the device.
+
+1. In LabVM, open Google Chrome and open this [link](https://aka.ms/wacdownload) to download the installer.
+
+2. Run the downloaded MSI file, accepting all the default values.
+
+3. Once installation has completed, select **Finish** to dismiss the setup window.
+
+4. Return to Google Chrome, and open the following link: <https://LabVM:443>.
+
+5. From the top-right menu of Windows Admin Center, select **Settings**. From the left menu, select **Extensions**. Find **Azure IoT Edge** from the list, and select **Install** from the toolbar menu.
+
+    ![Windows Admin Center displays with extensions highlighted in the left menu and Azure IoT Edge selected from the list. The Install button is highlighted in the toolbar menu.](media/windowsadmincenter_installiotedgeextension.png "Install Azure IoT Edge")
+
+6. Once installed, the Windows Admin Center user interface will refresh. If desired, select the **Installed extensions** tab and confirm that Azure IoT Edge is installed.
+
+### Task 4: Provision the IoT Edge device with the Azure IoT Hub Device Provisioning Service (DPS)
+
+Earlier in the lab we provisioned smart meter devices at scale using an enrollment group with the Azure IoT Hub Device Provisioning Service (DPS). In this task, we will provision LabVM as an IoT Edge device using an individual enrollment. We will continue to use symmetric key attestation.
+
+>**Note**: Device attestation using a TPM or X.509 certificates is more secure, and should be used for more stringent security requirements in production environments.
+
+1. In the Azure Portal, open the lab resource group and select the **smartmeter-dps-{suffix}** device provisioning service resource.
+
+2. From the left menu of the DPS, select **Manage enrollments**. Then, from the toolbar menu, select **+ Add individual enrollment**.
+
+    ![The DPS resource screen displays with Manage enrollments selected from the left menu and the + Add individual enrollment menu item highlighted in the toolbar menu.](media/dps_individualenrollmentmenu.png "DPS add individual enrollment")
+
+3. In the **Add Enrollment** form, populate the following values (leaving the rest as their defaults), then press **Save**.
+
+    | Field | Value |
+    |-------|-------|
+    | Mechanism | Select **Symmetric Key**. |
+    | Registration ID | Enter `LabVM`. |
+    | IoT Edge device | Select **True** |
+
+    ![The Add Enrollment form displays populated with the preceding values.](media/dps_individualenrollment_edgeform.png "Add Enrollment")
+
+4. On the **Manage enrollments** screen, select the **Individual Enrollments** tab, then select the **LabVM** registration entry.
+
+    ![The Manage enrollments screen displays with the Individual Enrollments tab selected. The list of individual enrollments displays with LabVM selected.](media/dps_individualenrollments_list.png "Individual Enrollments")
+
+5. On the LabVM Enrollment Details screen, copy and record the Primary Key value to a text editor.
+
+    ![The LabVM Enrollment Details screen displays with the copy button highlighted next to the Primary Key value.](media/labvmenrollmentdetails.png "LabVM Enrollment Details")
+
+### Task 5: Install Azure IoT Edge for Linux on Windows
+
+Now that the LabVM IoT Edge device is registered with the Device Provisioning Service, the Primary Key value can then be used in setting up the Azure IoT Edge runtime.
+
+1. On LabVM using Google Chrome, download and install [Azure IoT Edge for Linux on Windows](https://aka.ms/AzEflowMSI). This will download an MSI file through the browser. Once download completes, run the installer. This installer may close automatically.
+
+2. On LabVM using Google Chrome, access the Windows Admin Center at <https://LabVM:443>. If you already have Windows Admin Center, return to the connections page by selecting the **Windows Admin Center** text in the upper left corner.
+
+3. On the **All connections** screen, select **+ Add**.
+
+   ![The Windows Admin Center All connections screen displays with the + Add button highlighted.](media/windowsadmincenter_allconnections_add.png "Windows Admin Center All connections")
+
+4. On the **Add or create resources** screen, select the **Create new** button on the **Azure IoT Edge** card located beneath the **Other resources** heading.
+
+    ![The Azure IoT Edge card displays with the Create new button highlighted.](media/wac_createnewazureiotedge.png "Create new Azure IoT Edge")
+
+5. On the **Getting Started**, **Prerequisites** section, select **Next**.
+
+6. On the **Getting Started**, **License Terms** section, check the **I Accept** checkbox, and then select **Next**.
+
+7. On the **Getting Started**, **Diagnostic Data** section, select **Next: Deploy**.
+
+8. On the **Deploy**, **Target Device** screen, choose the **Select to evaluate** link next to the **labvm** connection.
+9. 
 ## After the hands-on lab
 
 Duration: 10 mins

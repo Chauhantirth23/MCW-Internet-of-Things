@@ -51,11 +51,8 @@ Microsoft and the trademarks listed at <https://www.microsoft.com/en-us/legal/in
     - [Task 1: Add your IoT Hub connection string to the CloudToDevice console app](#task-1-add-your-iot-hub-connection-string-to-the-cloudtodevice-console-app)
     - [Task 2: Send cloud-to-device messages](#task-2-send-cloud-to-device-messages)
   - [Exercise 5: Implement an IoT Edge Gateway](#exercise-5-implement-an-iot-edge-gateway)
-    - [Task 1: Install Hyper-V on the lab virtual machine](#task-1-install-hyper-v-on-the-lab-virtual-machine)
-    - [Task 2: Install a virtual switch on LabVM](#task-2-install-a-virtual-switch-on-labvm)
-    - [Task 3: Install Windows Admin Center](#task-3-install-windows-admin-center)
-    - [Task 4: Provision the IoT Edge device with the Azure IoT Hub Device Provisioning Service (DPS)](#task-4-provision-the-iot-edge-device-with-the-azure-iot-hub-device-provisioning-service-dps)
-    - [Task 5: Install Azure IoT Edge for Linux on Windows](#task-5-install-azure-iot-edge-for-linux-on-windows)
+    - [Task 1: Provision the IoT Edge device with the Azure IoT Hub Device Provisioning Service (DPS)](#task-1-provision-the-iot-edge-device-with-the-azure-iot-hub-device-provisioning-service-dps)
+    - [Task 2: Deploy a Linux server as an IoT Edge device](#task-2-deploy-a-linux-server-as-an-iot-edge-device)
   - [After the hands-on lab](#after-the-hands-on-lab)
     - [Task 1: Delete the resource group](#task-1-delete-the-resource-group)
 
@@ -1138,119 +1135,7 @@ In one customer building, Fabrikam would like to establish a transparent IoT Edg
 
 In this exercise, you will establish the LabVM as an IoT Edge transparent gateway and configure IoT devices to communicate through the gateway.
 
-### Task 1: Install Hyper-V on the lab virtual machine
-
-The IoT Edge runtime requires Hyper-V be installed on Windows-based operating systems.
-
-1. Connect to **LabVM**, select the start button and type `powershell`.
-
-2. Right-click on the **Windows PowerShell** item, then select **Run as administrator**.
-
-    ![The Windows start button is expanded with powershell entered into the search box and the Windows Powershell item's context menu showing with the Run as administrator item selected.](media/powershell_runasadministrator_menu.png "Run Windows PowerShell as administrator")
-
-3. At the PowerShell prompt, enter the following command to install Hyper-V on the virtual machine.
-
-    ```PowerShell
-    Install-WindowsFeature -Name Hyper-V -IncludeManagementTools
-    ```
-
-4. Restart the LabVM virtual machine to complete the installation process. Please allow enough time for the reboot to complete and then reconnect to the LabVM.
-
-### Task 2: Install a virtual switch on LabVM
-
-Windows Server does not have a virtual switch created and enabled by default, so we must do this manually on LabVM. This virtual switch is required to run IoT Edge for Linux on a Windows device.
-
->**Note**: Windows Desktop operating systems have this functionality out of the box.
-
-1. In **LabVM**, run Windows PowerShell as administrator once again.
-
-2. Run the following command to create a virtual machine switch.
-
-    ```PowerShell
-    New-VMSwitch -Name "iotedgevmswitch" -SwitchType Internal
-    ```
-
-3. Get the interface index of the created switch by executing the following. This execution will output a numeric index.
-
-    ```PowerShell
-    (Get-NetAdapter -Name '*iotedgevmswitch*').ifIndex
-    ```
-
-4. Using the interface index retrieved in the previous step, output the IP address information using the following command. Replace `{ifIndex}` with the numeric value output in the previous step. Record the IP Address value of the virtual switch.
-
-    ```PowerShell
-    Get-NetIPAddress -AddressFamily IPv4  -InterfaceIndex {ifIndex}
-    ```
-
-    ![A PowerShell command window displays with the preceding command, the IP Address value is highlighted in the output.](media/powershell_virtualswitchipaddress.png "Virtual Switch IP Address")
-
-5. Next, establish a new gateway IP address. To do this, replace the last octet of the virtual switch IP with `1`. As an example, if the ip address of the virtual switch is `169.254.196.168`, then the gateway IP would be `169.254.196.1`. Establish the gateway IP with the following command, replace the {gatewayIp} value with the new IP and the {ifIndex} value with the numeric interface index obtained earlier.
-
-    ```PowerShell
-    New-NetIPAddress -IPAddress {gatewayIp} -PrefixLength 24 -InterfaceIndex {ifIndex}
-    ```
-
-6. Create a Network Address Translation (NAT) object that translates an internal network address to an external network. This IP will take the virtual switch IP and replace the last octet with the value `0`. As an example, if the ip address of the virtual switch is `169.254.196.168`, then the NAT object IP would be `169.254.196.0`. Establish the NAT object with the following command, replacing the {natIp} with the new IP.
-
-    ```PowerShell
-    New-NetNat -Name "iotedgevmswitch" -InternalIPInterfaceAddressPrefix "{natIp}/24"
-    ```
-
-7. Install DHCP on the virtual machine using the following command.
-
-    ```PowerShell
-    Install-WindowsFeature -Name 'DHCP' -IncludeManagementTools
-    ```
-
-8. Add the DHCP server to the default local security group by issuing the following command.
-
-   ```PowerShell
-   netsh dhcp add securitygroups
-   ```
-
-9. Restart the DHCP service by executing the following command.
-
-    ```PowerShell
-    Restart-Service dhcpserver
-    ```
-
-10. Configure the DHCP server scope. Using the virtual switch IP, set the starting IP with the last octet replaced by `100` and the ending IP with the last octet replaced by `200`, this will allow the DHCP server to assign 100 IP addresses. Configure the DCHP server scope by issuing the following command, replacing {startIp} and {endIp} accordingly.
-
-    ```PowerShell
-    Add-DhcpServerV4Scope -Name "AzureIoTEdgeScope" -StartRange {startIp} -EndRange {endIp} -SubnetMask 255.255.255.0 -State Active
-    ```
-
-11. The following command will assign the NAT object and gateway IP to the DHCP server. Replace {natIp} and {gatewayIp} accordingly.
-
-    ```PowerShell
-    Set-DhcpServerV4OptionValue -ScopeID {natIp} -Router {gatewayIp}
-    ```
-
-12. Restart the DHCP service once more for the changes to take effect.
-
-    ```PowerShell
-    Restart-service dhcpserver
-    ```
-
-### Task 3: Install Windows Admin Center
-
-Windows Admin Center delivers a user interface that allows for the installation and management of IoT Edge on the device.
-
-1. In LabVM, open Google Chrome and open this [link](https://aka.ms/wacdownload) to download the installer.
-
-2. Run the downloaded MSI file, accepting all the default values.
-
-3. Once installation has completed, select **Finish** to dismiss the setup window.
-
-4. Return to Google Chrome, and open the following link: <https://LabVM:443>.
-
-5. From the top-right menu of Windows Admin Center, select **Settings**. From the left menu, select **Extensions**. Find **Azure IoT Edge** from the list, and select **Install** from the toolbar menu.
-
-    ![Windows Admin Center displays with extensions highlighted in the left menu and Azure IoT Edge selected from the list. The Install button is highlighted in the toolbar menu.](media/windowsadmincenter_installiotedgeextension.png "Install Azure IoT Edge")
-
-6. Once installed, the Windows Admin Center user interface will refresh. If desired, select the **Installed extensions** tab and confirm that Azure IoT Edge is installed.
-
-### Task 4: Provision the IoT Edge device with the Azure IoT Hub Device Provisioning Service (DPS)
+### Task 1: Provision the IoT Edge device with the Azure IoT Hub Device Provisioning Service (DPS)
 
 Earlier in the lab we provisioned smart meter devices at scale using an enrollment group with the Azure IoT Hub Device Provisioning Service (DPS). In this task, we will provision LabVM as an IoT Edge device using an individual enrollment. We will continue to use symmetric key attestation.
 
@@ -1267,43 +1152,141 @@ Earlier in the lab we provisioned smart meter devices at scale using an enrollme
     | Field | Value |
     |-------|-------|
     | Mechanism | Select **Symmetric Key**. |
-    | Registration ID | Enter `LabVM`. |
+    | Registration ID | Enter `edge-vm`. |
     | IoT Edge device | Select **True** |
 
     ![The Add Enrollment form displays populated with the preceding values.](media/dps_individualenrollment_edgeform.png "Add Enrollment")
 
-4. On the **Manage enrollments** screen, select the **Individual Enrollments** tab, then select the **LabVM** registration entry.
+4. On the **Manage enrollments** screen, select the **Individual Enrollments** tab, then select the **edge-vm** registration entry.
 
-    ![The Manage enrollments screen displays with the Individual Enrollments tab selected. The list of individual enrollments displays with LabVM selected.](media/dps_individualenrollments_list.png "Individual Enrollments")
+    ![The Manage enrollments screen displays with the Individual Enrollments tab selected. The list of individual enrollments displays with edge-vm selected.](media/dps_individualenrollments_list.png "Individual Enrollments")
 
-5. On the LabVM Enrollment Details screen, copy and record the Primary Key value to a text editor.
+5. On the edge-vm Enrollment Details screen, copy and record the Primary Key value to a text editor.
 
-    ![The LabVM Enrollment Details screen displays with the copy button highlighted next to the Primary Key value.](media/labvmenrollmentdetails.png "LabVM Enrollment Details")
+    ![The edge-vm Enrollment Details screen displays with the copy button highlighted next to the Primary Key value.](media/labvmenrollmentdetails.png "edge-vm Enrollment Details")
 
-### Task 5: Install Azure IoT Edge for Linux on Windows
+### Task 2: Deploy a Linux server as an IoT Edge device
 
-Now that the LabVM IoT Edge device is registered with the Device Provisioning Service, the Primary Key value can then be used in setting up the Azure IoT Edge runtime.
+The IoT Edge runtime can be installed on various form factors, from small development boards like the Raspberry Pi to industrial-sized servers. Fabrikam desires to deploy a Linux Virtual Machine to serve as the IoT Edge Gateway device.
 
-1. On LabVM using Google Chrome, download and install [Azure IoT Edge for Linux on Windows](https://aka.ms/AzEflowMSI). This will download an MSI file through the browser. Once download completes, run the installer. This installer may close automatically.
+1. In the Azure Portal, open the lab resource group and select **+ Create** from the toolbar menu.
 
-2. On LabVM using Google Chrome, access the Windows Admin Center at <https://LabVM:443>. If you already have Windows Admin Center, return to the connections page by selecting the **Windows Admin Center** text in the upper left corner.
+2. In the Search services and marketplace text box, enter and select `Ubuntu Server 18.04 LTS` from the suggestion list. Then on the resource screen, select **Create**.
 
-3. On the **All connections** screen, select **+ Add**.
+3. In the **Create a virtual machine** blade, fill the form as follows then select **Review + create**. Fields that are not specified can retain their default values.
 
-   ![The Windows Admin Center All connections screen displays with the + Add button highlighted.](media/windowsadmincenter_allconnections_add.png "Windows Admin Center All connections")
+    | Field | Value |
+    |-------|-------|
+    | Virtual machine name | Enter `edge-vm`. |
+    | Authentication type | Select **Password**. |
+    | Username | Enter `demouser`. |
+    | Password | Enter `Password.1!!`. |
+    | Confirm password | Enter `Password.1!!`.|
 
-4. On the **Add or create resources** screen, select the **Create new** button on the **Azure IoT Edge** card located beneath the **Other resources** heading.
+4. Once deployment has completed, open the newly deployed edge-vm resource and record the Public IP address value in a text editor.
 
-    ![The Azure IoT Edge card displays with the Create new button highlighted.](media/wac_createnewazureiotedge.png "Create new Azure IoT Edge")
+    ![The Virtual machine overview is displayed with the Public IP address value highlighted.](media/ubuntuvm_publicipaddress.png "Virtual machine Overview")
 
-5. On the **Getting Started**, **Prerequisites** section, select **Next**.
+5. In the upper right menu of the Azure Portal, open a cloud shell instance selecting **Bash** as the language of choice.
 
-6. On the **Getting Started**, **License Terms** section, check the **I Accept** checkbox, and then select **Next**.
+    ![The Azure Portal displays with the cloud shell icon highlighted in the top-right toolbar menu and Bash selected as the language.](media/cloudshell.png "Azure Portal Cloud Shell")
 
-7. On the **Getting Started**, **Diagnostic Data** section, select **Next: Deploy**.
+6. In the cloud shell, we will SSH into the virtual machine using the IP you recorded. At the Bash prompt, execute the following command, replacing {ipAddress} with the appropriate value.
 
-8. On the **Deploy**, **Target Device** screen, choose the **Select to evaluate** link next to the **labvm** connection.
-9. 
+    ```Bash
+    ssh demouser@{ipAddress}
+    ```
+
+7. When prompted for a password, enter `Password.1!!`.
+
+8. If prompted to trust the fingerprint, enter `yes`.
+
+9. You are now connected to the virtual machine, you can tell by the prompt changing to **demouser@edge-vm**. All commands executed will now be run on the virtual machine.
+
+    ![The Bash prompt displays demouser@edge-vm.](media/bash_demouserprompt.png "Bash prompt")
+
+10. Install the Microsoft installation packages repository configuration by executing the following.
+
+    ```Bash
+    curl https://packages.microsoft.com/config/ubuntu/18.04/multiarch/prod.list > ./microsoft-prod.list
+    ```
+
+11. Copy the generated list to the sources.list.d directory by issuing the following command.
+
+    ```Bash
+    sudo cp ./microsoft-prod.list /etc/apt/sources.list.d/
+    ```
+
+12. Install the Microsoft GPG public key.
+
+    ```Bash
+    curl https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > microsoft.gpg
+    ```
+
+13. Copy the key to a trusted location by executing the following command.
+
+    ```Bash
+    sudo cp ./microsoft.gpg /etc/apt/trusted.gpg.d/
+    ```
+
+14. Now that the Microsoft package feed has been added and trusted, update the device package list by executing the following command.
+
+    ```Bash
+    sudo apt-get update
+    ```
+
+15. Install the moby container engine by issuing the following command. When prompted to continue, enter `Y`. This container engine will be used to run IoT Edge modules in the form of Docker containers.
+
+    ```Bash
+    sudo apt-get install moby-engine
+    ```
+
+16. Install the IoT Edge runtime by executing the following command. When prompted to continue, enter `y`.
+
+    ```Bash
+    sudo apt-get install aziot-edge
+    ```
+
+17. Create a configuration file from a template that will contain the device identity and Device Provisioning Service information by executing the following command.
+
+    ```Bash
+    sudo cp /etc/aziot/config.toml.edge.template /etc/aziot/config.toml
+    ```
+
+18. Edit the newly created configuration file by issuing the following command.
+
+    ```Bash
+    sudo nano /etc/aziot/config.toml
+    ```
+
+19. Using the arrow keys on the keyboard, find the location of the DPS provisioning with symmetric key section. Modify the id_scope, registration id (edge-vm), and symmetric_key (individual device enrollment primary key) values, then save the file (Ctrl+X, then Y, then press enter).
+
+    ![The IoT Edge configuration file is open in nano with the variables mentioned above replaced accordingly.](media/iotedge_dpsconfig.png "IoT Edge configuration")
+
+20. Apply the configuration changes by executing the following command.
+
+    ```Bash
+    sudo iotedge config apply
+    ```
+
+21. Verify the installation by checking the status of the IoT Edge service.
+
+    ```Bash
+    sudo iotedge system status
+    ```
+
+22. Discover installed IoT Edge modules. The **edgeAgent** module should be listed with a status of **running**.
+
+    ```Bash
+    sudo iotedge list
+    ```
+
+    ![A Bash window displays with the sudo iotedge list command executed. The edgeAgent module displays as running.](media/iotedge_edgelist_agentrunning.png "IoT Edge module listing")
+
+23. In the Azure Portal, open the lab resource group and select the **smartmeter-hub-{suffix}** IoT Hub. Verify the IoT Edge device successfully registered through the DPS by selecting **IoT Edge** from the left menu and finding **edge-vm** in the listing.
+
+    ![The IoT Hub screen displays with IoT Edge selected from the left menu and edge-vm highlighted in the IoT Edge Devices listing.](media/iothub_edgevm.png "Azure IoT Edge Devices Listing")
+
 ## After the hands-on lab
 
 Duration: 10 mins

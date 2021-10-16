@@ -1448,11 +1448,10 @@ Individual downstream device clients need to be configured to communicate direct
 
     ![A code snippet displays with the IP address string value highlighted.](media/deviceconnectiontogatewayip.png "IoT Edge Gateway IP")
 
-3. Locate **//TODO: 12 - Install and trust IoT Edge Gateway root certificate" and replace it with the following listing. This code will trust the root certificate of the IoT Edge gateway device.
+3. Locate **//TODO: 12 - Install and trust IoT Edge Gateway root certificate** and replace it with the following listing. This code will trust the root certificate of the IoT Edge gateway device.
 
     ```C#
     //TODO: 12 - Install and trust IoT Edge Gateway root certificate
-
     string trustedCACertPath = @"C:\Users\adana\Downloads\azure-iot-test-only.root.ca.cert.pem";
     if (!string.IsNullOrWhiteSpace(trustedCACertPath))
     {

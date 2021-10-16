@@ -1448,9 +1448,36 @@ Individual downstream device clients need to be configured to communicate direct
 
     ![A code snippet displays with the IP address string value highlighted.](media/deviceconnectiontogatewayip.png "IoT Edge Gateway IP")
 
-3. Run the application, select one or more building windows and choose **Register**. Once the windows display as cyan, select the **Connect** button for the devices to start sending telemetry through the IoT Edge Gateway.
+3. Locate **//TODO: 12 - Install and trust IoT Edge Gateway root certificate" and replace it with the following listing. This code will trust the root certificate of the IoT Edge gateway device.
+
+    ```C#
+    //TODO: 12 - Install and trust IoT Edge Gateway root certificate
+
+    string trustedCACertPath = @"C:\Users\adana\Downloads\azure-iot-test-only.root.ca.cert.pem";
+    if (!string.IsNullOrWhiteSpace(trustedCACertPath))
+    {
+        if (!File.Exists(trustedCACertPath))
+        {
+            // cannot proceed further without a proper cert file                    
+            throw new InvalidOperationException("Invalid certificate file.");
+        }
+        else
+        {
+            X509Store store = new X509Store(StoreName.Root, StoreLocation.CurrentUser);
+            store.Open(OpenFlags.ReadWrite);
+            store.Add(new X509Certificate2(X509Certificate.CreateFromCertFile(trustedCACertPath)));
+            store.Close();
+        }
+    }
+    ```
+
+4. Run the application, select one or more building windows and choose **Register**. Once the windows display as cyan, select the **Connect** button for the devices to start sending telemetry through the IoT Edge Gateway.
 
     ![The Smart Meter Simulator displays with multiple smart meters sending telemetry."](media/smartmetersim_registerandconnect.png "Smart Meter Simulator")
+
+    >**Note**: You may be prompted to install the IoT Edge Gateway certificate, select **Yes** if this occurs.
+
+    ![A Security Warning dialog displays regarding installation of a certificate.](media/osinstallcertificate.png "Security Warning dialog")
 
 ## After the hands-on lab
 

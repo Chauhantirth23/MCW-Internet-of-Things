@@ -53,7 +53,9 @@ Microsoft and the trademarks listed at <https://www.microsoft.com/en-us/legal/in
   - [Exercise 5: Implement an IoT Edge Gateway](#exercise-5-implement-an-iot-edge-gateway)
     - [Task 1: Provision the IoT Edge device with the Azure IoT Hub Device Provisioning Service (DPS)](#task-1-provision-the-iot-edge-device-with-the-azure-iot-hub-device-provisioning-service-dps)
     - [Task 2: Deploy a Linux server as an IoT Edge device](#task-2-deploy-a-linux-server-as-an-iot-edge-device)
-    - [Task 3: Configure the IoT Edge Device as a Gateway](#task-3-configure-the-iot-edge-device-as-a-gateway)
+    - [Task 3: Generate test certificates for downstream device connectivity](#task-3-generate-test-certificates-for-downstream-device-connectivity)
+    - [Task 4: Configure the IoT Edge Device as a Gateway in IoT Hub](#task-4-configure-the-iot-edge-device-as-a-gateway-in-iot-hub)
+    - [Task 4: Update device client to communicate through the IoT Edge Gateway](#task-4-update-device-client-to-communicate-through-the-iot-edge-gateway)
   - [After the hands-on lab](#after-the-hands-on-lab)
     - [Task 1: Delete the resource group](#task-1-delete-the-resource-group)
 
@@ -1188,95 +1190,111 @@ The IoT Edge runtime can be installed on various form factors, from small develo
 
     ![The Virtual machine overview is displayed with the Public IP address value highlighted.](media/ubuntuvm_publicipaddress.png "Virtual machine Overview")
 
-5. In the upper right menu of the Azure Portal, open a cloud shell instance selecting **Bash** as the language of choice.
+5. To setup a host name for the IoT Edge device, select the **Not configured** link next to the **DNS name** field.
+
+    ![The edge-vm screen displays with the Not configured link highlighted next to the DNS name label.](media/iotedge_hostnamenotconfigured.png "Host name not configured")
+
+6. On the **edge-vm-ip** Configuration screen, provide a globally unique DNS name label such as **edge-vm-{suffix}**. Then select **Save**.
+
+    ![The edge-vm-ip Configuration screen displays with the DNS label set to edge-vm-suffix and the save button is highlighted in the toolbar menu.](media/iotedge_sethostname_portal.png "edge-vm-ip Configuration")
+
+7. Wait a few moments, then refresh the Overview screen of edge-vm. The DNS name value should now be populated with the label you assigned in the previous step.
+
+   ![A portion of the edge-vm Overview screen displays with the DNS name value populated.](media/iotedge_dnsnamepopulated.png "Host name is configured")
+
+8. In the upper right menu of the Azure Portal, open a cloud shell instance selecting **Bash** as the language of choice.
 
     ![The Azure Portal displays with the cloud shell icon highlighted in the top-right toolbar menu and Bash selected as the language.](media/cloudshell.png "Azure Portal Cloud Shell")
 
-6. In the cloud shell, we will SSH into the virtual machine using the IP you recorded. At the Bash prompt, execute the following command, replacing {ipAddress} with the appropriate value.
+9. In the cloud shell, we will SSH into the virtual machine using the IP you recorded. At the Bash prompt, execute the following command, replacing {ipAddress} with the appropriate value.
 
     ```Bash
     ssh demouser@{ipAddress}
     ```
 
-7. When prompted for a password, enter `Password.1!!`.
+10. When prompted for a password, enter `Password.1!!`.
 
-8. If prompted to trust the fingerprint, enter `yes`.
+11. If prompted to trust the fingerprint, enter `yes`.
 
-9. You are now connected to the virtual machine, you can tell by the prompt changing to **demouser@edge-vm**. All commands executed will now be run on the virtual machine.
+12. You are now connected to the virtual machine, you can tell by the prompt changing to **demouser@edge-vm**. All commands executed will now be run on the virtual machine.
 
     ![The Bash prompt displays demouser@edge-vm.](media/bash_demouserprompt.png "Bash prompt")
 
-10. Install the Microsoft installation packages repository configuration by executing the following.
+13. Install the Microsoft installation packages repository configuration by executing the following.
 
     ```Bash
     curl https://packages.microsoft.com/config/ubuntu/18.04/multiarch/prod.list > ./microsoft-prod.list
     ```
 
-11. Copy the generated list to the sources.list.d directory by issuing the following command.
+14. Copy the generated list to the sources.list.d directory by issuing the following command.
 
     ```Bash
     sudo cp ./microsoft-prod.list /etc/apt/sources.list.d/
     ```
 
-12. Install the Microsoft GPG public key.
+15. Install the Microsoft GPG public key.
 
     ```Bash
     curl https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > microsoft.gpg
     ```
 
-13. Copy the key to a trusted location by executing the following command.
+16. Copy the key to a trusted location by executing the following command.
 
     ```Bash
     sudo cp ./microsoft.gpg /etc/apt/trusted.gpg.d/
     ```
 
-14. Now that the Microsoft package feed has been added and trusted, update the device package list by executing the following command.
+17. Now that the Microsoft package feed has been added and trusted, update the device package list by executing the following command.
 
     ```Bash
     sudo apt-get update
     ```
 
-15. Install the moby container engine by issuing the following command. When prompted to continue, enter `Y`. This container engine will be used to run IoT Edge modules in the form of Docker containers.
+18. Install the moby container engine by issuing the following command. When prompted to continue, enter `Y`. This container engine will be used to run IoT Edge modules in the form of Docker containers.
 
     ```Bash
     sudo apt-get install moby-engine
     ```
 
-16. Install the IoT Edge runtime by executing the following command. When prompted to continue, enter `y`.
+19. Install the IoT Edge runtime by executing the following command. When prompted to continue, enter `y`.
 
     ```Bash
     sudo apt-get install aziot-edge
     ```
 
-17. Create a configuration file from a template that will contain the device identity and Device Provisioning Service information by executing the following command.
+20. Create a configuration file from a template that will contain the device identity and Device Provisioning Service information by executing the following command.
 
     ```Bash
     sudo cp /etc/aziot/config.toml.edge.template /etc/aziot/config.toml
     ```
 
-18. Edit the newly created configuration file by issuing the following command.
+21. Edit the newly created configuration file by issuing the following command.
 
     ```Bash
     sudo nano /etc/aziot/config.toml
     ```
 
-19. Using the arrow keys on the keyboard, find the location of the DPS provisioning with symmetric key section. Modify the id_scope, registration id (edge-vm), and symmetric_key (individual device enrollment primary key) values, then save the file (Ctrl+X, then Y, then press enter).
+22. Using the arrow keys on the keyboard, locate and uncomment the **hostname** variable. Set its value to the host name you assigned to edge-vm.
+
+    ![A portion of the IoT Edge configuration file is open in nano where the hostname value is set accordingly.](media/iotedge_config_sethostname.png "IoT Edge configuration")
+
+23. Keeping the configuration file open in nano, find the location of the DPS provisioning with symmetric key section. Uncomment and modify the id_scope, registration id (edge-vm), and symmetric_key (individual device enrollment primary key) values, then exit with saving the file (Ctrl+X, then Y, then press enter).
 
     ![The IoT Edge configuration file is open in nano with the variables mentioned above replaced accordingly.](media/iotedge_dpsconfig.png "IoT Edge configuration")
 
-20. Apply the configuration changes by executing the following command.
+24. Apply the configuration changes by executing the following command.
 
     ```Bash
     sudo iotedge config apply
     ```
 
-21. Verify the installation by checking the status of the IoT Edge service.
+25. Verify the installation by checking the status of the IoT Edge service.
 
     ```Bash
     sudo iotedge system status
     ```
 
-22. Discover installed IoT Edge modules. The **edgeAgent** module should be listed with a status of **running**.
+26. Discover installed IoT Edge modules. The **edgeAgent** module should be listed with a status of **running**.
 
     ```Bash
     sudo iotedge list
@@ -1284,19 +1302,121 @@ The IoT Edge runtime can be installed on various form factors, from small develo
 
     ![A Bash window displays with the sudo iotedge list command executed. The edgeAgent module displays as running.](media/iotedge_edgelist_agentrunning.png "IoT Edge module listing")
 
-23. In the Azure Portal, open the lab resource group and select the **smartmeter-hub-{suffix}** IoT Hub. Verify the IoT Edge device successfully registered through the DPS by selecting **IoT Edge** from the left menu and finding **edge-vm** in the listing.
+27. In the Azure Portal, open the lab resource group and select the **smartmeter-hub-{suffix}** IoT Hub. Verify the IoT Edge device successfully registered through the DPS by selecting **IoT Edge** from the left menu and finding **edge-vm** in the listing.
 
     ![The IoT Hub screen displays with IoT Edge selected from the left menu and edge-vm highlighted in the IoT Edge Devices listing.](media/iothub_edgevm.png "Azure IoT Edge Devices Listing")
 
-24. In order for downstream devices to communicate with the IoT Edge Gateway using MQTT protocol, port 1883 needs to be opened in the Ubuntu firewall. Open port 1883 by executing the following command in the cloud shell.
+28. In order for downstream devices to communicate with the IoT Edge Gateway using the AMQP protocol, port 5671 needs to be opened in the Ubuntu firewall. Open port 5671 by executing the following command in the cloud shell.
 
     ```Bash
-    sudo ufw allow 1883
+    sudo ufw allow 5671
     ```
 
-### Task 3: Configure the IoT Edge Device as a Gateway
+29. Keep the cloud shell window open and connected to the edge-vm via ssh for the next task.
 
-To configure edge-vm as an IoT Edge Gateway the edgeHub IoT Edge module needs to be configured by having its routing defined. The route defined will be setup to forward all downstream device messages to IoT Hub. IoT Edge modules can be configured and deployed to devices via the IoT Hub.
+### Task 3: Generate test certificates for downstream device connectivity
+
+1. The Azure/iotedge GitHub project contains scripts to generate non-production certificates. Clone the repository by executing the following command:
+
+   ```Bash
+   git clone https://github.com/Azure/iotedge.git
+   ```
+
+2. Create a directory to hold the necessary certificates.
+
+    ```Bash
+    mkdir certificates
+    ```
+
+3. Move to the new directory.
+
+    ```Bash
+    cd certificates
+    ```
+
+4. Copy the necessary scripts from the GitHub repository.
+
+    ```Bash
+    cp ../iotedge/tools/CACertificates/*.cnf .
+    ```
+
+    then
+
+    ```Bash
+    cp ../iotedge/tools/CACertificates/certGen.sh .
+    ```
+
+5. Leverage the helper script to generate the root CA certificate and one intermediate certificate.
+
+   ```Bash
+   ./certGen.sh create_root_and_intermediate
+   ```
+
+6. Leverage the helper script to create the IoT Edge device CA certificate.
+
+   ```Bash
+   ./certGen.sh create_edge_device_ca_certificate "edgevmca"
+   ```
+
+7. Once more we will edit the IoT Edge configuration to configure the generated certificates.
+
+    ```Bash
+    sudo nano /etc/aziot/config.toml
+    ```
+
+8. Locate the **trust_bundle_cert** parameter, uncomment and set the value as follows.
+
+    ```Bash
+    trust_bundle_cert = "file:///home/demouser/certificates/certs/azure-iot-test-only.root.ca.cert.pem"
+    ```
+
+9. Continuing in the same file, locate the **\[edge_ca\]** section, uncomment and replace the values as follows, then save and exit while saving the file (Ctrl+X, then Y, then press enter):
+
+    ```Bash
+    [edge_ca]
+    cert: "file:///home/demouser/certificates/certs/iot-edge-device-ca-edgevmca-full-chain.cert.pem"
+    pk: "file:///home/demouser/certificates/private/iot-edge-device-ca-edgevmca.key.pem"
+    ```
+
+10. Apply the configuration changes by executing the following command.
+
+    ```Bash
+    sudo iotedge config apply
+    ```
+
+11. Exit the SSH session by executing the following command:
+
+    ```Bash
+    exit
+    ```
+
+12. Next, create a **certificates** directory and download the IoT Edge certificates to the cloud shell storage.
+
+    ```Bash
+    mkdir ~/certificates
+    ```
+
+    Followed by the secure copy command (replacing {edgeVMIp} with the IP address of the IoT Edge device):
+
+    ```Bash
+     scp -r -p demouser@{edgeVmIp}:~/certificates ~/certificates
+    ```
+
+    You will be prompted for the password: `Password.1!!`.
+
+13. Download the root certificate to a known location by selecting the **Upload/Download files** button on the cloud shell toolbar menu, and choosing **Download** from the expanded menu options.
+
+    ![The cloud shell toolbar displays with the Upload/Download files button highlighted.](media/cloudshell_downloaduploadbutton.png "Cloud shell toolbar")
+
+14. In the **Download a file** dialog, set the path to the following value, this will download the file from the browser. We will be using this file later on in this lab.
+
+    ```Bash
+    /certificates/certs/azure-iot-test-only.root.ca.cert.pem
+    ```
+
+### Task 4: Configure the IoT Edge Device as a Gateway in IoT Hub
+
+To configure edge-vm as an IoT Edge Gateway the $edgeHub IoT Edge module needs to be configured by having its routing defined. The route defined will be setup to forward all downstream device messages to IoT Hub. IoT Edge modules can be configured and deployed to devices via the IoT Hub.
 
 1. In the Azure Portal, open the lab resource group and select the **smartmeter-hub-{SUFFIX}** IoT Hub resource.
 
@@ -1317,6 +1437,20 @@ To configure edge-vm as an IoT Edge Gateway the edgeHub IoT Edge module needs to
 5. Wait a few moments and refresh the **edge-vm** screen. Note that the IoT Edge Runtime Response now displays **200 -- OK** and the $edgeHub module is now running.
 
     ![The edge-vm screen displays with the IoT Edge Runtime Response displaying a status of 200 and the $edgeHub module displays as running.](media/iotedge_runtime200_edgehubrunning.png "edge-vm status")
+
+### Task 4: Update device client to communicate through the IoT Edge Gateway
+
+Individual downstream device clients need to be configured to communicate directly through the IoT Edge Gateway device rather than to the IoT Hub directly.
+
+1. In Visual Studio, open the **Sensor.cs** file from within the SmartMeterSimulator.
+
+2. Locate the line **//TODO: 6. Connect the Device to Iot Hub by creating an instance of DeviceClient**, and replace the **IotHubUri** hostname variable with a string value with the IP address of **edge-vm**. This will override the IoT Hub host name provided by the DPS and instead route all messages to the IoT Edge Gateway.
+
+    ![A code snippet displays with the IP address string value highlighted.](media/deviceconnectiontogatewayip.png "IoT Edge Gateway IP")
+
+3. Run the application, select one or more building windows and choose **Register**. Once the windows display as cyan, select the **Connect** button for the devices to start sending telemetry through the IoT Edge Gateway.
+
+    ![The Smart Meter Simulator displays with multiple smart meters sending telemetry."](media/smartmetersim_registerandconnect.png "Smart Meter Simulator")
 
 ## After the hands-on lab
 

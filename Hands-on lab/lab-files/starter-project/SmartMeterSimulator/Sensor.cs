@@ -69,7 +69,8 @@ namespace SmartMeterSimulator
         public void ConnectDevice()
         {
             //TODO: 6. Connect the Device to Iot Hub by creating an instance of DeviceClient
-            //DeviceClient = ...
+            DeviceClient = DeviceClient.Create(IotHubUri, "edge-vm-cep123.eastus.cloudapp.azure.com", new DeviceAuthenticationWithRegistrySymmetricKey(DeviceId, DeviceKey));
+            //DeviceClient = DeviceClient.Create(IotHubUri, new DeviceAuthenticationWithRegistrySymmetricKey(DeviceId, DeviceKey));
 
             //Set the Device State to Ready
             State = DeviceState.Connected;
@@ -97,14 +98,17 @@ namespace SmartMeterSimulator
             };
 
             //TODO: 7.Serialize the telemetryDataPoint to JSON
-            //var messageString = ...
+            var messageString = JsonConvert.SerializeObject(telemetryDataPoint);
 
             //TODO: 8.Encode the JSON string to ASCII as bytes and create new Message with the bytes
-            //var message = ...
+            var message = new Message(Encoding.ASCII.GetBytes(messageString));
 
             //TODO: 9.Send the message to the IoT Hub
-            //var sendEventAsync = ...
-            //if (sendEventAsync != null) ...
+            var sendEventAsync = DeviceClient?.SendEventAsync(message);
+            if (sendEventAsync != null) await sendEventAsync;
+
+            int i = 0;
+
         }
 
         /// <summary>
@@ -125,7 +129,7 @@ namespace SmartMeterSimulator
                 }
 
                 //TODO: 10.Set the received message for this sensor to the string value of the message byte array
-                //ReceivedMessage = ...
+                ReceivedMessage = Encoding.ASCII.GetString(receivedMessage.GetBytes());
                 if (double.TryParse(ReceivedMessage, out var requestedTemperature))
                 {
                     ReceivedTemperatureSetting = requestedTemperature;
@@ -141,7 +145,7 @@ namespace SmartMeterSimulator
                 // IoT Hub delivers it again.
 
                 //TODO: 11.Send acknowledgement to IoT hub that the message was processed
-                //await DeviceClient?...
+                await DeviceClient?.CompleteAsync(receivedMessage);
             }
             catch (Exception)
             {
@@ -167,3 +171,4 @@ namespace SmartMeterSimulator
         Hot
     }
 }
+

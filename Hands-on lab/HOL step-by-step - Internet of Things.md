@@ -1124,7 +1124,7 @@ In this task, you will leave the simulator running and separately launch the con
 
 ## Exercise 5: Implement an IoT Edge Gateway
 
-Duration: 120 minutes
+Duration: 80 minutes
 
 An IoT Edge Gateway device provides a connection between other devices on the network and the IoT Hub. Edge Gateway devices can be classified as a transparent or translation gateway.
 

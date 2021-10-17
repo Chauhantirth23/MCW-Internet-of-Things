@@ -55,7 +55,7 @@ Microsoft and the trademarks listed at <https://www.microsoft.com/en-us/legal/in
     - [Task 2: Deploy a Linux server as an IoT Edge device](#task-2-deploy-a-linux-server-as-an-iot-edge-device)
     - [Task 3: Generate test certificates for downstream device connectivity](#task-3-generate-test-certificates-for-downstream-device-connectivity)
     - [Task 4: Configure the IoT Edge Device as a Gateway in IoT Hub](#task-4-configure-the-iot-edge-device-as-a-gateway-in-iot-hub)
-    - [Task 4: Update device client to communicate through the IoT Edge Gateway](#task-4-update-device-client-to-communicate-through-the-iot-edge-gateway)
+    - [Task 4: Update the device client to communicate through the IoT Edge Gateway](#task-4-update-the-device-client-to-communicate-through-the-iot-edge-gateway)
   - [After the hands-on lab](#after-the-hands-on-lab)
     - [Task 1: Delete the resource group](#task-1-delete-the-resource-group)
 
@@ -1333,6 +1333,8 @@ The IoT Edge runtime can be installed on various form factors, from small develo
 
 ### Task 3: Generate test certificates for downstream device connectivity
 
+It is a requirement that downstream devices authenticate to the [IoT Edge Gateway using certificates](https://docs.microsoft.com/en-us/azure/iot-edge/how-to-create-transparent-gateway). In this task, you will create test certificates and ensure proper authentication between downstream devices and the gateway device.
+
 1. The Azure/iotedge GitHub project contains scripts to generate non-production certificates. Clone the repository by executing the following command:
 
    ```Bash
@@ -1455,7 +1457,7 @@ To configure edge-vm as an IoT Edge Gateway the $edgeHub IoT Edge module needs t
 
     ![The edge-vm screen displays with the IoT Edge Runtime Response displaying a status of 200 and the $edgeHub module displays as running.](media/iotedge_runtime200_edgehubrunning.png "edge-vm status")
 
-### Task 4: Update device client to communicate through the IoT Edge Gateway
+### Task 4: Update the device client to communicate through the IoT Edge Gateway
 
 Individual downstream device clients need to be configured to communicate directly through the IoT Edge Gateway device rather than to the IoT Hub directly. In this task, the meters located in the second (right) building of the simulator will be configured to send telemetry through the IoT Edge transparent gateway. These are Devices 7, 8, and 9.
 
@@ -1487,7 +1489,7 @@ Individual downstream device clients need to be configured to communicate direct
 
     ![A code snippet displays with the IoT Edge Gateway hostname string value highlighted.](media/deviceconnectiontogatewayip.png "IoT Edge Gateway connectivity")
 
-10. Locate **//TODO: 12 - Install and trust IoT Edge Gateway root certificate** and replace it with the following listing. This code will trust the root certificate of the IoT Edge gateway device. Replace {CERTPATH} with the full path to the certificate you downloaded from the cloud shell earlier.
+10. Locate **//TODO: 12 - Install and trust IoT Edge Gateway root certificate** in the DeviceManager.cs file and replace it with the following listing. This code will trust the root certificate of the IoT Edge gateway device. Replace {CERTPATH} with the full path to the certificate you downloaded from the cloud shell earlier. This method is called every time the application is run (MainForm.cs in the MainForm constructor).
 
     ```C#
     //TODO: 12 - Install and trust IoT Edge Gateway root certificate
@@ -1509,7 +1511,7 @@ Individual downstream device clients need to be configured to communicate direct
     }
     ```
 
-11. Run the application, select all three windows in the second building (on the right of the simulator) and choose **Register**. Once the windows display as cyan, select the **Connect** button for the devices to start sending telemetry through the IoT Edge Gateway.
+11. Run the application, select all three windows in the second building (on the right in the simulator) and choose **Register**. Once the windows display as cyan, select the **Connect** button for the devices to start sending telemetry through the IoT Edge Gateway.
 
     ![The Smart Meter Simulator displays with multiple smart meters sending telemetry."](media/smartmetersim_registerandconnect.png "Smart Meter Simulator")
 

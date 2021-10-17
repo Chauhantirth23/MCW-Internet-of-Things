@@ -1186,7 +1186,9 @@ The IoT Edge runtime can be installed on various form factors, from small develo
     | Password | Enter `Password.1!!`. |
     | Confirm password | Enter `Password.1!!`.|
 
-4. Once deployment has completed, open the newly deployed edge-vm resource and record the Public IP address value in a text editor.
+    ![The Create a virtual machine form displays populated with the aforementioned values.](media/createedgevmblade.png "Create a virtual machine")
+
+4. Once deployment has completed, open the newly deployed **edge-vm-{SUFFIX}** resource and record the Public IP address value in a text editor.
 
     ![The Virtual machine overview is displayed with the Public IP address value highlighted.](media/ubuntuvm_publicipaddress.png "Virtual machine Overview")
 
@@ -1194,7 +1196,7 @@ The IoT Edge runtime can be installed on various form factors, from small develo
 
     ![The edge-vm screen displays with the Not configured link highlighted next to the DNS name label.](media/iotedge_hostnamenotconfigured.png "Host name not configured")
 
-6. On the **edge-vm-ip** Configuration screen, provide the DNS name label **edge-vm-{SUFFIX}**. It is important that this value matches the registration ID of the device in DPS. Select **Save**.
+6. On the **edge-vm-{SUFFIX}-ip** Configuration screen, provide the DNS name label **edge-vm-{SUFFIX}**. It is important that this value matches the registration ID of the device in DPS. Select **Save**.
 
     ![The edge-vm-ip Configuration screen displays with the DNS label set to edge-vm-suffix and the save button is highlighted in the toolbar menu.](media/iotedge_sethostname_portal.png "edge-vm-ip Configuration")
 
@@ -1435,13 +1437,13 @@ To configure edge-vm as an IoT Edge Gateway the $edgeHub IoT Edge module needs t
 
 1. In the Azure Portal, open the lab resource group and select the **smartmeter-hub-{SUFFIX}** IoT Hub resource.
 
-2. From the left menu, select **IoT Edge**, then select **edge-vm** from the list of devices. Notice that the IoT Edge Runtime response indicates the deployment configuration is not set, and the $edgeHub module is not running - this will soon change.
+2. From the left menu, select **IoT Edge**, then select **edge-vm-{SUFFIX}** from the list of devices. Notice that the IoT Edge Runtime response indicates the deployment configuration is not set, and the $edgeHub module is not running - this will soon change.
 
-3. On the **edge-vm** screen, select **Set modules** from the top toolbar menu.
+3. On the **edge-vm-{SUFFIX}** screen, select **Set modules** from the top toolbar menu.
 
     ![The edge-vm screen displays with the Set modules button highlighted in the toolbar menu.](media/iotedge_setmodules.png "Set IoT Edge modules")
 
-4. On the **Set modules on device: edge-vm** screen, select the **Routes** tab and establish the following route. Once complete, select **Review + Create**, then **Create** on the review screen.
+4. On the **Set modules on device: edge-vm-{SUFFIX}** screen, select the **Routes** tab and establish the following route. Once complete, select **Review + Create**, then **Create** on the review screen.
 
    | Route Name | Route Value | Description |
    |------------|-------------|-------------|
@@ -1449,21 +1451,43 @@ To configure edge-vm as an IoT Edge Gateway the $edgeHub IoT Edge module needs t
 
     ![The Set Modules screen displays with the Routes tab selected and the preceding route.](media/iotedge_setmodules_routes.png "IoT Edge Routes")
 
-5. Wait a few moments and refresh the **edge-vm** screen. Note that the IoT Edge Runtime Response now displays **200 -- OK** and the $edgeHub module is now running.
+5. Wait a few moments and refresh the **edge-vm-{SUFFIX}** screen. Note that the IoT Edge Runtime Response now displays **200 -- OK** and the $edgeHub module is now running (you may need to refresh a few times to see the $edgeHub module running successfully).
 
     ![The edge-vm screen displays with the IoT Edge Runtime Response displaying a status of 200 and the $edgeHub module displays as running.](media/iotedge_runtime200_edgehubrunning.png "edge-vm status")
 
 ### Task 4: Update device client to communicate through the IoT Edge Gateway
 
-Individual downstream device clients need to be configured to communicate directly through the IoT Edge Gateway device rather than to the IoT Hub directly.
+Individual downstream device clients need to be configured to communicate directly through the IoT Edge Gateway device rather than to the IoT Hub directly. In this task, the meters located in the second (right) building of the simulator will be configured to send telemetry through the IoT Edge transparent gateway. These are Devices 7, 8, and 9.
 
-1. In Visual Studio, open the **Sensor.cs** file from within the SmartMeterSimulator.
+1. In the Azure Portal, open the lab resource group and locate and select the **smartmeter-hub-{SUFFIX}** IoT Hub.
 
-2. Locate the line **//TODO: 6. Connect the Device to Iot Hub by creating an instance of DeviceClient**, and replace the **IotHubUri** hostname variable with a string value with the IP address of **edge-vm**. This will override the IoT Hub host name provided by the DPS and instead route all messages to the IoT Edge Gateway.
+2. From the left menu, select **IoT devices**.
 
-    ![A code snippet displays with the IP address string value highlighted.](media/deviceconnectiontogatewayip.png "IoT Edge Gateway IP")
+3. From the list of IoT devices, select **Device7**.
 
-3. Locate **//TODO: 12 - Install and trust IoT Edge Gateway root certificate** and replace it with the following listing. This code will trust the root certificate of the IoT Edge gateway device.
+   ![The smartmeter-hub-{SUFFIX} IoT devices screen displays with IoT devices selected in the left menu and Device7 highlighted in the list of devices.](media/iotdevices_list_device7.png "IoT devices list")
+
+4. Assign **edge-vm-{SUFFIX}** as the parent device. This will allow this device to communicate through the IoT Edge transparent gateway. Select the cog icon next to the **Parent device** field.
+
+    ![The IoT device screen displays with the cog icon selected next to the Parent device field label.](media/device_setparentdevice_cog.png "IoT device details")
+
+5. On the **Set an IoT Edge device as parent device** screen, select **edge-vm-{SUFFIX}** from the listing, then select **OK**.
+
+    ![The Set an IoT Edge device as parent device screen displays with edge-vm-{SUFFIX} selected and the OK button is highlighted.](media/iotedge_setparent_selection.png "IoT Edge parent device selection")
+
+6. Select **Save** on the IoT Device screen to commit the changes.
+
+    ![The IoT device screen displays with the Save button selected in the toolbar menu. The populated Parent device field is highlighted.](media/iothub_devicescreen_save.png "Save IoT device settings")
+
+7. Repeat steps 1-6 for **Device8** and **Device9**.
+
+8. In Visual Studio, open the **Sensor.cs** file from within the SmartMeterSimulator.
+
+9. Locate the line **//TODO: 6. Connect the Device to Iot Hub by creating an instance of DeviceClient** and add the gateway hostname as the second parameter. This parameter will route all messages to the IoT Edge Gateway.
+
+    ![A code snippet displays with the IoT Edge Gateway hostname string value highlighted.](media/deviceconnectiontogatewayip.png "IoT Edge Gateway connectivity")
+
+10. Locate **//TODO: 12 - Install and trust IoT Edge Gateway root certificate** and replace it with the following listing. This code will trust the root certificate of the IoT Edge gateway device. Replace {CERTPATH} with the full path to the certificate you downloaded from the cloud shell earlier.
 
     ```C#
     //TODO: 12 - Install and trust IoT Edge Gateway root certificate
@@ -1485,13 +1509,23 @@ Individual downstream device clients need to be configured to communicate direct
     }
     ```
 
-4. Run the application, select one or more building windows and choose **Register**. Once the windows display as cyan, select the **Connect** button for the devices to start sending telemetry through the IoT Edge Gateway.
+11. Run the application, select all three windows in the second building (on the right of the simulator) and choose **Register**. Once the windows display as cyan, select the **Connect** button for the devices to start sending telemetry through the IoT Edge Gateway.
 
     ![The Smart Meter Simulator displays with multiple smart meters sending telemetry."](media/smartmetersim_registerandconnect.png "Smart Meter Simulator")
 
     >**Note**: You may be prompted to install the IoT Edge Gateway certificate, select **Yes** if this occurs.
 
     ![A Security Warning dialog displays regarding installation of a certificate.](media/osinstallcertificate.png "Security Warning dialog")
+
+12. Now it's time to verify telemetry is being sent to IoT Hub. In Visual Studio, expand the **View** menu and choose **Cloud Explorer**.
+
+13. Expand the subscription being used for this lab, and expand the **IoT Hubs** node. Right-click on **smartmeter-hub-{SUFFIX}** to display the context menu and select the **Start Monitoring Built-in Event Endpoint** item.
+
+    ![The Cloud Explorer displays with a subscription expanded along with the IoT Hubs node. The smartmeter-hub-{SUFFIX} has its context menu expanded with the Start Monitoring Built-in Event Endpoint item selected.](media/cloudexplorer_iothubcontextmenu.png "Monitor Built-in Event Endpoint")
+
+14. The **Output** panel will start displaying IoT Hub events including telemetry events.
+
+    ![The Output pane displays with incoming telemetry events.](media/output_iothubevents.png "IoT Hub Output")
 
 ## After the hands-on lab
 

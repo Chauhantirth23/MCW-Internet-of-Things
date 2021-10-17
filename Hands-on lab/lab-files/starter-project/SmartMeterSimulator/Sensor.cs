@@ -69,8 +69,7 @@ namespace SmartMeterSimulator
         public void ConnectDevice()
         {
             //TODO: 6. Connect the Device to Iot Hub by creating an instance of DeviceClient
-            DeviceClient = DeviceClient.Create(IotHubUri, "edge-vm-cep123.eastus.cloudapp.azure.com", new DeviceAuthenticationWithRegistrySymmetricKey(DeviceId, DeviceKey));
-            //DeviceClient = DeviceClient.Create(IotHubUri, new DeviceAuthenticationWithRegistrySymmetricKey(DeviceId, DeviceKey));
+            DeviceClient = DeviceClient.Create(IotHubUri, "edge-vm-cep123.eastus.cloudapp.azure.com", new DeviceAuthenticationWithRegistrySymmetricKey(DeviceId, DeviceKey));            
 
             //Set the Device State to Ready
             State = DeviceState.Connected;

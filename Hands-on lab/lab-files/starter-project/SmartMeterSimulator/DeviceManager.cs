@@ -21,29 +21,24 @@ namespace SmartMeterSimulator
         /// <returns></returns>
         public async static Task<SmartMeterDevice> RegisterDeviceAsync(string enrollmentKey, string idScope, string deviceId)
         {
-            var globalEndpoint = "global.azure-devices-provisioning.net";            
+            var globalEndpoint = "global.azure-devices-provisioning.net";
             SmartMeterDevice device = null;
 
             //TODO: 1. Derive a device key from a combination of the group enrollment key and the device id
-            var primaryKey = ComputeDerivedSymmetricKey(enrollmentKey, deviceId);
+            //var primaryKey = ...
 
             //TODO: 2. Create symmetric key with the generated primary key
-            using (var security = new SecurityProviderSymmetricKey(deviceId, primaryKey, null))
+            //using (var security = ...
             using (var transportHandler = new ProvisioningTransportHandlerMqtt())
             {
                 //TODO: 3. Create a Provisioning Device Client
-                var client = ProvisioningDeviceClient.Create(globalEndpoint, idScope, security, transportHandler);
+                //var client = ...
 
                 //TODO: 4. Register the device using the symmetric key and MQTT
-                DeviceRegistrationResult result = await client.RegisterAsync();
+                //DeviceRegistrationResult result = ...
 
                 //TODO: 5. Populate the device provisioning details
-                device = new SmartMeterDevice()
-                {
-                    AuthenticationKey = primaryKey,
-                    DeviceId = deviceId,
-                    IoTHubHostName = result.AssignedHub
-                };
+                //device = new SmartMeterDevice()...             
             }
 
             //return the device
@@ -75,7 +70,6 @@ namespace SmartMeterSimulator
             return key;
         }
 
-       
         /// <summary>
         /// Add certificate in local cert store for use by downstream devices
         /// client for secure connection to IoT Edge runtime.
@@ -88,22 +82,6 @@ namespace SmartMeterSimulator
         {
             //TODO: 12 - Install and trust IoT Edge Gateway root certificate
             //string trustedCACertPath = ...
-            string trustedCACertPath = @"C:\Users\adana\Downloads\azure-iot-test-only.root.ca.cert.pem";
-            if (!string.IsNullOrWhiteSpace(trustedCACertPath))
-            {
-                if (!File.Exists(trustedCACertPath))
-                {
-                    // cannot proceed further without a proper cert file                    
-                    throw new InvalidOperationException("Invalid certificate file.");
-                }
-                else
-                {
-                    X509Store store = new X509Store(StoreName.Root, StoreLocation.CurrentUser);
-                    store.Open(OpenFlags.ReadWrite);
-                    store.Add(new X509Certificate2(X509Certificate.CreateFromCertFile(trustedCACertPath)));
-                    store.Close();
-                }
-            }
         }
     }
 

@@ -1491,7 +1491,7 @@ Individual downstream device clients need to be configured to communicate direct
 
     ```C#
     //TODO: 12 - Install and trust IoT Edge Gateway root certificate
-    string trustedCACertPath = @"C:\Users\adana\Downloads\azure-iot-test-only.root.ca.cert.pem";
+    string trustedCACertPath = @"{CERTPATH}";
     if (!string.IsNullOrWhiteSpace(trustedCACertPath))
     {
         if (!File.Exists(trustedCACertPath))

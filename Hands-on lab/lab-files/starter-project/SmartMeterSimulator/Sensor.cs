@@ -69,7 +69,7 @@ namespace SmartMeterSimulator
         public void ConnectDevice()
         {
             //TODO: 6. Connect the Device to Iot Hub by creating an instance of DeviceClient
-            DeviceClient = DeviceClient.Create(IotHubUri, "edge-vm-cep123.eastus.cloudapp.azure.com", new DeviceAuthenticationWithRegistrySymmetricKey(DeviceId, DeviceKey));            
+            //DeviceClient = ...
 
             //Set the Device State to Ready
             State = DeviceState.Connected;
@@ -97,17 +97,14 @@ namespace SmartMeterSimulator
             };
 
             //TODO: 7.Serialize the telemetryDataPoint to JSON
-            var messageString = JsonConvert.SerializeObject(telemetryDataPoint);
+            //var messageString = ...
 
             //TODO: 8.Encode the JSON string to ASCII as bytes and create new Message with the bytes
-            var message = new Message(Encoding.ASCII.GetBytes(messageString));
+            //var message = ...
 
             //TODO: 9.Send the message to the IoT Hub
-            var sendEventAsync = DeviceClient?.SendEventAsync(message);
-            if (sendEventAsync != null) await sendEventAsync;
-
-            int i = 0;
-
+            //var sendEventAsync = ...
+            //if (sendEventAsync != null) ...
         }
 
         /// <summary>
@@ -128,7 +125,7 @@ namespace SmartMeterSimulator
                 }
 
                 //TODO: 10.Set the received message for this sensor to the string value of the message byte array
-                ReceivedMessage = Encoding.ASCII.GetString(receivedMessage.GetBytes());
+                //ReceivedMessage = ...
                 if (double.TryParse(ReceivedMessage, out var requestedTemperature))
                 {
                     ReceivedTemperatureSetting = requestedTemperature;
@@ -144,7 +141,7 @@ namespace SmartMeterSimulator
                 // IoT Hub delivers it again.
 
                 //TODO: 11.Send acknowledgement to IoT hub that the message was processed
-                await DeviceClient?.CompleteAsync(receivedMessage);
+                //await DeviceClient?...
             }
             catch (Exception)
             {
@@ -170,4 +167,3 @@ namespace SmartMeterSimulator
         Hot
     }
 }
-

@@ -261,7 +261,8 @@ Directions: Tables reconvene with the larger group to hear the facilitator/SME s
 | Azure Databricks        | <https://azure.microsoft.com/services/databricks/>                                    |
 | Azure Digital Twins     | <https://docs.microsoft.com/en-us/azure/digital-twins/overview> |
 | Query the Azure Digital Twins twin graph | <https://docs.microsoft.com/en-us/azure/digital-twins/how-to-query-graph> |
-| Azure Maps Indoor Maps Module | <https://docs.microsoft.com/en-us/azure/azure-maps/how-to-use-indoor-module> | 
+| Azure Maps Indoor Maps Module | <https://docs.microsoft.com/en-us/azure/azure-maps/how-to-use-indoor-module> |
 | MCW Leveraging Azure Digital Twins in a supply chain | <https://github.com/microsoft/MCW-Leveraging-Azure-Digital-Twins-in-a-supply-chain> |
 | MCW Predictive Maintenance for remote field devices | <https://github.com/microsoft/MCW-Predictive-Maintenance-for-remote-field-devices> |
 | MCW Securing Azure IoT Solutions | <https://github.com/microsoft/MCW-Securing-Azure-IoT-solutions> |
+| Energy architectures | <https://docs.microsoft.com/en-us/azure/architecture/browse/?terms=energy> |

@@ -1155,18 +1155,18 @@ Earlier in the lab we provisioned smart meter devices at scale using an enrollme
     | Field | Value |
     |-------|-------|
     | Mechanism | Select **Symmetric Key**. |
-    | Registration ID | Enter `edge-vm`. |
+    | Registration ID | Enter `edge-vm-{SUFFIX}`. |
     | IoT Edge device | Select **True** |
 
     ![The Add Enrollment form displays populated with the preceding values.](media/dps_individualenrollment_edgeform.png "Add Enrollment")
 
-4. On the **Manage enrollments** screen, select the **Individual Enrollments** tab, then select the **edge-vm** registration entry.
+4. On the **Manage enrollments** screen, select the **Individual Enrollments** tab, then select the **edge-vm-{SUFFIX}** registration entry.
 
-    ![The Manage enrollments screen displays with the Individual Enrollments tab selected. The list of individual enrollments displays with edge-vm selected.](media/dps_individualenrollments_list.png "Individual Enrollments")
+    ![The Manage enrollments screen displays with the Individual Enrollments tab selected. The list of individual enrollments displays with edge-vm-{SUFFIX} selected.](media/dps_individualenrollments_list.png "Individual Enrollments")
 
-5. On the edge-vm Enrollment Details screen, copy and record the Primary Key value to a text editor.
+5. On the edge-vm-{SUFFIX} Enrollment Details screen, copy and record the Primary Key value to a text editor.
 
-    ![The edge-vm Enrollment Details screen displays with the copy button highlighted next to the Primary Key value.](media/labvmenrollmentdetails.png "edge-vm Enrollment Details")
+    ![The edge-vm-{SUFFIX} Enrollment Details screen displays with the copy button highlighted next to the Primary Key value.](media/labvmenrollmentdetails.png "edge-vm-{SUFFIX} Enrollment Details")
 
 ### Task 2: Deploy a Linux server as an IoT Edge device
 
@@ -1180,7 +1180,7 @@ The IoT Edge runtime can be installed on various form factors, from small develo
 
     | Field | Value |
     |-------|-------|
-    | Virtual machine name | Enter `edge-vm`. |
+    | Virtual machine name | Enter `edge-vm-{SUFFIX}`. |
     | Authentication type | Select **Password**. |
     | Username | Enter `demouser`. |
     | Password | Enter `Password.1!!`. |
@@ -1194,11 +1194,11 @@ The IoT Edge runtime can be installed on various form factors, from small develo
 
     ![The edge-vm screen displays with the Not configured link highlighted next to the DNS name label.](media/iotedge_hostnamenotconfigured.png "Host name not configured")
 
-6. On the **edge-vm-ip** Configuration screen, provide a globally unique DNS name label such as **edge-vm-{suffix}**. Then select **Save**.
+6. On the **edge-vm-ip** Configuration screen, provide the DNS name label **edge-vm-{SUFFIX}**. It is important that this value matches the registration ID of the device in DPS. Select **Save**.
 
     ![The edge-vm-ip Configuration screen displays with the DNS label set to edge-vm-suffix and the save button is highlighted in the toolbar menu.](media/iotedge_sethostname_portal.png "edge-vm-ip Configuration")
 
-7. Wait a few moments, then refresh the Overview screen of edge-vm. The DNS name value should now be populated with the label you assigned in the previous step.
+7. Wait a few moments, then return to the **edge-vm-{SUFFIX}** Overview screen and select **Refresh** from the toolbar menu. The DNS name value should now be populated with the label you assigned in the previous step.
 
    ![A portion of the edge-vm Overview screen displays with the DNS name value populated.](media/iotedge_dnsnamepopulated.png "Host name is configured")
 
@@ -1212,13 +1212,13 @@ The IoT Edge runtime can be installed on various form factors, from small develo
     ssh demouser@{ipAddress}
     ```
 
-10. When prompted for a password, enter `Password.1!!`.
+10. If prompted to trust the fingerprint, enter `yes`.
 
-11. If prompted to trust the fingerprint, enter `yes`.
+11. When prompted for a password, enter `Password.1!!`.
 
-12. You are now connected to the virtual machine, you can tell by the prompt changing to **demouser@edge-vm**. All commands executed will now be run on the virtual machine.
+12. You are now connected to the virtual machine, you can tell by the prompt changing to **demouser@edge-vm-{SUFFIX}**. All commands executed will now be run on the virtual machine.
 
-    ![The Bash prompt displays demouser@edge-vm.](media/bash_demouserprompt.png "Bash prompt")
+    ![The Bash prompt displays demouser@edge-vm-{SUFFIX}.](media/bash_demouserprompt.png "Bash prompt")
 
 13. Install the Microsoft installation packages repository configuration by executing the following.
 
@@ -1238,7 +1238,7 @@ The IoT Edge runtime can be installed on various form factors, from small develo
     curl https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > microsoft.gpg
     ```
 
-16. Copy the key to a trusted location by executing the following command.
+16. Copy the key to the trusted location by executing the following command.
 
     ```Bash
     sudo cp ./microsoft.gpg /etc/apt/trusted.gpg.d/
@@ -1302,7 +1302,7 @@ The IoT Edge runtime can be installed on various form factors, from small develo
 
     ![A Bash window displays with the sudo iotedge list command executed. The edgeAgent module displays as running.](media/iotedge_edgelist_agentrunning.png "IoT Edge module listing")
 
-27. In the Azure Portal, open the lab resource group and select the **smartmeter-hub-{suffix}** IoT Hub. Verify the IoT Edge device successfully registered through the DPS by selecting **IoT Edge** from the left menu and finding **edge-vm** in the listing.
+27. In the Azure Portal, open the lab resource group and select the **smartmeter-hub-{SUFFIX}** IoT Hub. Verify the IoT Edge device successfully registered through the DPS by selecting **IoT Edge** from the left menu and finding **edge-vm-{SUFFIX}** in the listing.
 
     ![The IoT Hub screen displays with IoT Edge selected from the left menu and edge-vm highlighted in the IoT Edge Devices listing.](media/iothub_edgevm.png "Azure IoT Edge Devices Listing")
 
@@ -1313,6 +1313,21 @@ The IoT Edge runtime can be installed on various form factors, from small develo
     ```
 
 29. Keep the cloud shell window open and connected to the edge-vm via ssh for the next task.
+
+30. In the Azure Portal, open the lab resource group and select the **edge-vm-{SUFFIX}-nsg** Network security group.
+
+31. From the left menu, select **Inbound security rules**, then **+ Add**.
+
+    ![The edge-vm-nsg resource screen displays with Inbound security rules selected from the left menu and the + Add button highlighted in the toolbar menu.](media/nsg_inbound_addmenu.png "Inbound network security rules")
+
+32. In the **Add inbound security rule** blade, fill the form as follows and select **Add**. Fields not mentioned retain their default value.
+
+    | Field | Value |
+    |-------|-------|
+    | Destination port ranges | Enter `5671`. |
+    | Name | Enter `AMQP`. |
+
+    ![The Add inbound security rule blade displays populated with the aforementioned values.](media/addinboundruleform.png "Add inbound security rule")
 
 ### Task 3: Generate test certificates for downstream device connectivity
 

@@ -122,7 +122,7 @@ In these steps, you will provision an instance of IoT Hub.
 
      ![The Basics tab for IoT Hub is displayed, with the values specified above entered into the appropriate fields.](./media/iot-hub-basics-blade.png 'Create IoT Hub Basics tab')
 
-4. Select the **Management** tab. Accept the default Pricing and scale tier of **S1: Standard tier**, and select **Review + create**.
+4. Select the **Management** tab. Accept the default Pricing and scale tier of **S1: Standard tier** and select **Review + create**.
 
     ![The Management tab for IoT Hub is displayed with the Standard pricing tier selected.](media/iot-hub-management-tab.png 'Create IoT Hub Management tab')
 
@@ -362,7 +362,7 @@ You will want to avoid entering the DPS Group Enrollment Key and ID Scope every 
 
 ### Task 3: Implement the communication of telemetry with IoT Hub
 
-1. Open **Sensor.cs** from the **Solution Explorer**, and complete the **TODO** items 6 to 11 as indicated within the code that are responsible for transmitting telemetry data to the IoT Hub, as well as receiving data from IoT Hub.
+1. Open **Sensor.cs** from the **Solution Explorer** and complete the **TODO** items 6 to 11 as indicated within the code that are responsible for transmitting telemetry data to the IoT Hub, as well as receiving data from IoT Hub.
 
 2. The following code shows the completed result:
 
@@ -735,7 +735,7 @@ Fabrikam would like to visualize the "hot" data showing the average temperature 
 
     ![Under File, Save is highlighted.](media/power-bi-save-report.png 'Save report')
 
-12. Enter the name `Average Temperatures`, and select **Save**.
+12. Enter the name `Average Temperatures` and select **Save**.
 
     ![The report name is set to Average Temperatures.](./media/power-bi-save-report-average-temperatures.png 'Save your report')
 
@@ -970,7 +970,7 @@ In this task, you will create a new Databricks notebook to perform some processi
 
 11. Run the cell.
 
-12. **Insert a new cell** into the notebook, and paste the following code to mount your blob storage account into Databricks File System (DBFS), then **run** the cell.
+12. **Insert a new cell** into the notebook and paste the following code to mount your blob storage account into Databricks File System (DBFS), then **run** the cell.
 
     ```python
     # Mount the blob storage account at /mnt/smartmeters. This assumes your container name is smartmeters, and you have a folder named smartmeters within that container, as specified in the exercises above.
@@ -1020,7 +1020,7 @@ In this task, you will create a new Databricks notebook to perform some processi
     df.write.mode("overwrite").saveAsTable("SmartMeters")
     ```
 
-19. Now, you will use the `%sql` magic command to change the language of the next cell to **SQL** from the notebook's default language, Python, then execute a SQL command to aggregate the SmartMeter data by average temperature. Paste the following code into **a new cell**, and **run** the cell.
+19. Now, you will use the `%sql` magic command to change the language of the next cell to **SQL** from the notebook's default language, Python, then execute a SQL command to aggregate the SmartMeter data by average temperature. Paste the following code into **a new cell** and **run** the cell:
 
     ```sql
     %sql
@@ -1142,7 +1142,7 @@ In this exercise, you will establish the LabVM as an IoT Edge transparent gatewa
 
 Earlier in the lab we provisioned smart meter devices at scale using an enrollment group with the Azure IoT Hub Device Provisioning Service (DPS). In this task, we will provision LabVM as an IoT Edge device using an individual enrollment. We will continue to use symmetric key attestation.
 
->**Note**: Device attestation using a TPM or X.509 certificates is more secure, and should be used for more stringent security requirements in production environments.
+>**Note**: Device attestation using a TPM or X.509 certificates is more secure and should be used for more stringent security requirements in production environments.
 
 1. In the Azure Portal, open the lab resource group and select the **smartmeter-dps-{suffix}** device provisioning service resource.
 
@@ -1218,7 +1218,7 @@ The IoT Edge runtime can be installed on various form factors, from small develo
 
 11. When prompted for a password, enter `Password.1!!`.
 
-12. You are now connected to the virtual machine, you can tell by the prompt changing to **demouser@edge-vm-{SUFFIX}**. All commands executed will now be run on the virtual machine.
+12. You are now connected to the virtual machine; you can tell by the prompt changing to **demouser@edge-vm-{SUFFIX}**. All commands executed will now be run on the virtual machine.
 
     ![The Bash prompt displays demouser@edge-vm-{SUFFIX}.](media/bash_demouserprompt.png "Bash prompt")
 
@@ -1423,11 +1423,11 @@ It is a requirement that downstream devices authenticate to the [IoT Edge Gatewa
 
     You will be prompted for the password: `Password.1!!`.
 
-13. Download the root certificate to a known location by selecting the **Upload/Download files** button on the cloud shell toolbar menu, and choosing **Download** from the expanded menu options.
+13. Download the root certificate to a known location by selecting the **Upload/Download files** button on the cloud shell toolbar menu and chooseg **Download** from the expanded menu options.
 
     ![The cloud shell toolbar displays with the Upload/Download files button highlighted.](media/cloudshell_downloaduploadbutton.png "Cloud shell toolbar")
 
-14. In the **Download a file** dialog, set the path to the following value, this will download the file from the browser. We will be using this file later on in this lab.
+14. In the **Download a file** dialog, set the path to the following value, this will download the file from the browser. We will be using this file later in this lab.
 
     ```Bash
     /certificates/certs/azure-iot-test-only.root.ca.cert.pem
@@ -1521,7 +1521,7 @@ Individual downstream device clients need to be configured to communicate direct
 
 12. Now it's time to verify telemetry is being sent to IoT Hub. In Visual Studio, expand the **View** menu and choose **Cloud Explorer**.
 
-13. Expand the subscription being used for this lab, and expand the **IoT Hubs** node. Right-click on **smartmeter-hub-{SUFFIX}** to display the context menu and select the **Start Monitoring Built-in Event Endpoint** item.
+13. Expand the subscription being used for this lab and expand the **IoT Hubs** node. Right-click on **smartmeter-hub-{SUFFIX}** to display the context menu and select the **Start Monitoring Built-in Event Endpoint** item.
 
     ![The Cloud Explorer displays with a subscription expanded along with the IoT Hubs node. The smartmeter-hub-{SUFFIX} has its context menu expanded with the Start Monitoring Built-in Event Endpoint item selected.](media/cloudexplorer_iothubcontextmenu.png "Monitor Built-in Event Endpoint")
 
@@ -1541,6 +1541,6 @@ In this exercise, you will delete any Azure resources that were created in suppo
 
 2. Search for the name of your research group and select it from the list.
 
-3. Select Delete in the command bar and confirm the deletion by re-typing the Resource group name, and selecting Delete.
+3. Select Delete in the command bar and confirm the deletion by re-typing the Resource group name and selecting Delete.
 
 You should follow all steps provided _after_ attending the Hands-on lab.

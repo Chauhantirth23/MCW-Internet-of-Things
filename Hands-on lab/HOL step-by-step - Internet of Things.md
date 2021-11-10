@@ -50,12 +50,12 @@ Microsoft and the trademarks listed at <https://www.microsoft.com/en-us/legal/in
   - [Exercise 5: Sending commands to the IoT devices](#exercise-5-sending-commands-to-the-iot-devices)
     - [Task 1: Add your IoT Hub connection string to the CloudToDevice console app](#task-1-add-your-iot-hub-connection-string-to-the-cloudtodevice-console-app)
     - [Task 2: Send cloud-to-device messages](#task-2-send-cloud-to-device-messages)
-  - [Exercise 5: Implement an IoT Edge Gateway](#exercise-5-implement-an-iot-edge-gateway)
+  - [Exercise 6: Implement an IoT Edge Gateway](#exercise-6-implement-an-iot-edge-gateway)
     - [Task 1: Provision the IoT Edge device with the Azure IoT Hub Device Provisioning Service (DPS)](#task-1-provision-the-iot-edge-device-with-the-azure-iot-hub-device-provisioning-service-dps)
     - [Task 2: Deploy a Linux server as an IoT Edge device](#task-2-deploy-a-linux-server-as-an-iot-edge-device)
     - [Task 3: Generate test certificates for downstream device connectivity](#task-3-generate-test-certificates-for-downstream-device-connectivity)
     - [Task 4: Configure the IoT Edge Device as a Gateway in IoT Hub](#task-4-configure-the-iot-edge-device-as-a-gateway-in-iot-hub)
-    - [Task 4: Update the device client to communicate through the IoT Edge Gateway](#task-4-update-the-device-client-to-communicate-through-the-iot-edge-gateway)
+    - [Task 5: Update the device client to communicate through the IoT Edge Gateway](#task-5-update-the-device-client-to-communicate-through-the-iot-edge-gateway)
   - [After the hands-on lab](#after-the-hands-on-lab)
     - [Task 1: Delete the resource group](#task-1-delete-the-resource-group)
 
@@ -1122,7 +1122,7 @@ In this task, you will leave the simulator running and separately launch the con
 
 6. In the console window, you can enter `Y` to send another message. Experiment with setting the temperature on other devices and observe the results.
 
-## Exercise 5: Implement an IoT Edge Gateway
+## Exercise 6: Implement an IoT Edge Gateway
 
 Duration: 80 minutes
 
@@ -1457,7 +1457,7 @@ To configure edge-vm as an IoT Edge Gateway the $edgeHub IoT Edge module needs t
 
     ![The edge-vm screen displays with the IoT Edge Runtime Response displaying a status of 200 and the $edgeHub module displays as running.](media/iotedge_runtime200_edgehubrunning.png "edge-vm status")
 
-### Task 4: Update the device client to communicate through the IoT Edge Gateway
+### Task 5: Update the device client to communicate through the IoT Edge Gateway
 
 Individual downstream device clients need to be configured to communicate directly through the IoT Edge Gateway device rather than to the IoT Hub directly. In this task, the meters located in the second (right) building of the simulator will be configured to send telemetry through the IoT Edge transparent gateway. These are Devices 7, 8, and 9.
 

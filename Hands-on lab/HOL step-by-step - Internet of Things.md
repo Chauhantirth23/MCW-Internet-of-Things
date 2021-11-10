@@ -1252,7 +1252,7 @@ The IoT Edge runtime can be installed on various form factors, from small develo
     sudo apt-get update
     ```
 
-18. Install the moby container engine by issuing the following command. When prompted to continue, enter `Y`. This container engine will be used to run IoT Edge modules in the form of Docker containers.
+18. Install the Moby container engine by issuing the following command. When prompted to continue, enter `Y`. This container engine will be used to run IoT Edge modules in the form of Docker containers.
 
     ```Bash
     sudo apt-get install moby-engine

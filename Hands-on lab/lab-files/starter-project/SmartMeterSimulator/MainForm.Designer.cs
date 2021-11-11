@@ -42,9 +42,9 @@
             this.Device3 = new System.Windows.Forms.Button();
             this.Device6 = new System.Windows.Forms.Button();
             this.lvSensorData = new System.Windows.Forms.ListView();
-            this.colDeviceID = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.colSensorData = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.colDateTime = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.colDeviceID = new System.Windows.Forms.ColumnHeader();
+            this.colSensorData = new System.Windows.Forms.ColumnHeader();
+            this.colDateTime = new System.Windows.Forms.ColumnHeader();
             this.lblSensorInfo = new System.Windows.Forms.Label();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.label3 = new System.Windows.Forms.Label();
@@ -271,7 +271,7 @@
             // lblSensorInfo
             // 
             this.lblSensorInfo.AutoSize = true;
-            this.lblSensorInfo.Font = new System.Drawing.Font("Segoe UI Light", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblSensorInfo.Font = new System.Drawing.Font("Segoe UI Light", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.lblSensorInfo.Location = new System.Drawing.Point(47, 615);
             this.lblSensorInfo.Name = "lblSensorInfo";
             this.lblSensorInfo.Size = new System.Drawing.Size(0, 21);
@@ -398,7 +398,7 @@
             // 
             this.btnDisconnect.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("btnDisconnect.BackgroundImage")));
             this.btnDisconnect.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
-            this.btnDisconnect.Font = new System.Drawing.Font("Segoe UI Light", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnDisconnect.Font = new System.Drawing.Font("Segoe UI Light", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.btnDisconnect.Location = new System.Drawing.Point(156, 28);
             this.btnDisconnect.Name = "btnDisconnect";
             this.btnDisconnect.Size = new System.Drawing.Size(128, 34);
@@ -410,7 +410,7 @@
             // 
             this.btnConnect.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("btnConnect.BackgroundImage")));
             this.btnConnect.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
-            this.btnConnect.Font = new System.Drawing.Font("Segoe UI Light", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnConnect.Font = new System.Drawing.Font("Segoe UI Light", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.btnConnect.Location = new System.Drawing.Point(11, 28);
             this.btnConnect.Name = "btnConnect";
             this.btnConnect.Size = new System.Drawing.Size(128, 34);
@@ -570,7 +570,7 @@
             // lblEnrollmentKey
             // 
             this.lblEnrollmentKey.AutoSize = true;
-            this.lblEnrollmentKey.Font = new System.Drawing.Font("Segoe UI Light", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblEnrollmentKey.Font = new System.Drawing.Font("Segoe UI Light", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.lblEnrollmentKey.Location = new System.Drawing.Point(22, 9);
             this.lblEnrollmentKey.Name = "lblEnrollmentKey";
             this.lblEnrollmentKey.Size = new System.Drawing.Size(243, 21);
@@ -579,31 +579,30 @@
             // 
             // txtGroupEnrollmentKey
             // 
-            this.txtGroupEnrollmentKey.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.txtGroupEnrollmentKey.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.txtGroupEnrollmentKey.ForeColor = System.Drawing.SystemColors.WindowText;
             this.txtGroupEnrollmentKey.Location = new System.Drawing.Point(26, 33);
             this.txtGroupEnrollmentKey.Name = "txtGroupEnrollmentKey";
             this.txtGroupEnrollmentKey.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             this.txtGroupEnrollmentKey.Size = new System.Drawing.Size(470, 25);
             this.txtGroupEnrollmentKey.TabIndex = 38;
-            this.txtGroupEnrollmentKey.Text = "y049uC8uXA3lFOajcti3+EVUdbYECLjQ4pmJdna6sylPIvitW5Lsf2s1WNUenBUixvqGdK6E/Stv/9jl1" +
-    "cvjRg==";
+            this.txtGroupEnrollmentKey.Text = "PRIMARY KEY";
             // 
             // txtIdScope
             // 
-            this.txtIdScope.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.txtIdScope.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.txtIdScope.ForeColor = System.Drawing.SystemColors.WindowText;
             this.txtIdScope.Location = new System.Drawing.Point(26, 88);
             this.txtIdScope.Name = "txtIdScope";
             this.txtIdScope.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             this.txtIdScope.Size = new System.Drawing.Size(470, 25);
             this.txtIdScope.TabIndex = 40;
-            this.txtIdScope.Text = "0ne002CBFCE";
+            this.txtIdScope.Text = "DPS ID Scope";
             // 
             // lblIdScope
             // 
             this.lblIdScope.AutoSize = true;
-            this.lblIdScope.Font = new System.Drawing.Font("Segoe UI Light", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblIdScope.Font = new System.Drawing.Font("Segoe UI Light", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.lblIdScope.Location = new System.Drawing.Point(22, 64);
             this.lblIdScope.Name = "lblIdScope";
             this.lblIdScope.Size = new System.Drawing.Size(102, 21);
@@ -629,7 +628,7 @@
             this.Controls.Add(this.lblSensorInfo);
             this.Controls.Add(this.pDevices);
             this.DoubleBuffered = true;
-            this.Font = new System.Drawing.Font("Segoe UI Light", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.Font = new System.Drawing.Font("Segoe UI Light", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
             this.Name = "MainForm";

@@ -37,7 +37,10 @@ namespace SmartMeterSimulator
             lvSensorData.ListViewItemSorter = lvwColumnSorter;
             lvwColumnSorter.SortColumn = 2; //TimeStamp column
             lvwColumnSorter.Order = SortOrder.Descending;
-            lvSensorData.Sort();          
+            lvSensorData.Sort();
+
+            //Ensure IoT Edge Gateway device root certificate is trusted
+            DeviceManager.InstallCACert();
         }
 
         private void btnRegister_Click(object sender, EventArgs e)

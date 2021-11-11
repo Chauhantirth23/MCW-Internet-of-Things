@@ -1,5 +1,7 @@
 ﻿using System;
+using System.IO;
 using System.Security.Cryptography;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Azure.Devices.Provisioning.Client;
@@ -66,6 +68,20 @@ namespace SmartMeterSimulator
             }
 
             return key;
+        }
+
+        /// <summary>
+        /// Add certificate in local cert store for use by downstream devices
+        /// client for secure connection to IoT Edge runtime.
+        ///
+        ///    Note: On Windows machines, if you have not run this from an Administrator prompt,
+        ///    a prompt will likely come up to confirm the installation of the certificate.
+        ///    This usually happens the first time a certificate will be installed.
+        /// </summary>
+        public static void InstallCACert()
+        {
+            //TODO: 12 - Install and trust IoT Edge Gateway root certificate
+            //string trustedCACertPath = ...
         }
     }
 

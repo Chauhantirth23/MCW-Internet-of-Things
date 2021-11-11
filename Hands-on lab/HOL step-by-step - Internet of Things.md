@@ -9,7 +9,7 @@ Hands-on lab step-by-step
 </div>
 
 <div class="MCWHeader3">
-June 2021
+October 2021
 </div>
 
 Information in this document, including URL and other Internet Web site references, is subject to change without notice. Unless otherwise noted, the example companies, organizations, products, domain names, e-mail addresses, logos, people, places, and events depicted herein are fictitious, and no association with any real company, organization, product, domain name, e-mail address, logo, person, place or event is intended or should be inferred. Complying with all applicable copyright laws is the responsibility of the user. Without limiting the rights under copyright, no part of this document may be reproduced, stored in or introduced into a retrieval system, or transmitted in any form or by any means (electronic, mechanical, photocopying, recording, or otherwise), or for any purpose, without the express written permission of Microsoft Corporation.
@@ -50,6 +50,12 @@ Microsoft and the trademarks listed at <https://www.microsoft.com/en-us/legal/in
   - [Exercise 5: Sending commands to the IoT devices](#exercise-5-sending-commands-to-the-iot-devices)
     - [Task 1: Add your IoT Hub connection string to the CloudToDevice console app](#task-1-add-your-iot-hub-connection-string-to-the-cloudtodevice-console-app)
     - [Task 2: Send cloud-to-device messages](#task-2-send-cloud-to-device-messages)
+  - [Exercise 6: Implement an IoT Edge Gateway](#exercise-6-implement-an-iot-edge-gateway)
+    - [Task 1: Provision the IoT Edge device with the Azure IoT Hub Device Provisioning Service (DPS)](#task-1-provision-the-iot-edge-device-with-the-azure-iot-hub-device-provisioning-service-dps)
+    - [Task 2: Deploy a Linux server as an IoT Edge device](#task-2-deploy-a-linux-server-as-an-iot-edge-device)
+    - [Task 3: Generate test certificates for downstream device connectivity](#task-3-generate-test-certificates-for-downstream-device-connectivity)
+    - [Task 4: Configure the IoT Edge Device as a Gateway in IoT Hub](#task-4-configure-the-iot-edge-device-as-a-gateway-in-iot-hub)
+    - [Task 5: Update the device client to communicate through the IoT Edge Gateway](#task-5-update-the-device-client-to-communicate-through-the-iot-edge-gateway)
   - [After the hands-on lab](#after-the-hands-on-lab)
     - [Task 1: Delete the resource group](#task-1-delete-the-resource-group)
 
@@ -116,7 +122,7 @@ In these steps, you will provision an instance of IoT Hub.
 
      ![The Basics tab for IoT Hub is displayed, with the values specified above entered into the appropriate fields.](./media/iot-hub-basics-blade.png 'Create IoT Hub Basics tab')
 
-4. Select the **Management** tab. Accept the default Pricing and scale tier of **S1: Standard tier**, and select **Review + create**.
+4. Select the **Management** tab. Accept the default Pricing and scale tier of **S1: Standard tier** and select **Review + create**.
 
     ![The Management tab for IoT Hub is displayed with the Standard pricing tier selected.](media/iot-hub-management-tab.png 'Create IoT Hub Management tab')
 
@@ -197,7 +203,7 @@ Creating an enrollment group enables Fabrikam to allow devices to self-register.
     - **Auto-generate keys**: Checked.
     - **IoT Edge device**: Select `False`.
     - **Select how you want to assign devices to hubs**: Select `Evenly weighted distribution`.
-    - **Select the IoT hubs this group can be assigned to**: Select `smartmeter-hub-{SUFFIX}`.
+    - **Select the IoT hubs this group can be assigned to**: Select `smartmeter-hub-{SUFFIX}.azure-devices.net`.
     - **Select how you want the device data to be handled on re-provisioning**: Select `Re-provision and migrate data`.
     - **Initial Device Twin State**: Retain the default value.
     - **Enable entry**: Select `Enable`.
@@ -225,6 +231,8 @@ Fabrikam has left you a partially completed sample in the form of the Smart Mete
    ![On the Visual Studio View menu, Task List is selected.](media/visual-studio-view-menu-task-list.png 'Visual Studio View menu')
 
 3. In the **Task List**, you will see a list of **TODO** tasks, where each task represents one line of code that needs to be completed. Complete the line of code below each **TODO** using the code below as a reference. If your task list is blank, complete TODO steps 1-5 as indicated in the code in the next step.
+
+    >**Note**: Sometimes the Task List will not populate, this will not impact completing this lab.
 
 4. The following code represents the completed tasks in **DeviceManager.cs**:
 
@@ -354,7 +362,7 @@ You will want to avoid entering the DPS Group Enrollment Key and ID Scope every 
 
 ### Task 3: Implement the communication of telemetry with IoT Hub
 
-1. Open **Sensor.cs** from the **Solution Explorer**, and complete the **TODO** items 6 to 11 as indicated within the code that are responsible for transmitting telemetry data to the IoT Hub, as well as receiving data from IoT Hub.
+1. Open **Sensor.cs** from the **Solution Explorer** and complete the **TODO** items 6 to 11 as indicated within the code that are responsible for transmitting telemetry data to the IoT Hub, as well as receiving data from IoT Hub.
 
 2. The following code shows the completed result:
 
@@ -559,7 +567,7 @@ In this task, you will build and run the Smart Meter Simulator project.
 
    ![On the IoT Hub blade, in the Explorers section, under Explorers, IoT Devices is highlighted.](media/iot-hub-explorers-iot-devices.png 'IoT Hub blade, Explorers section')
 
-7. You should see all your registered devices listed having a status of **enabled**.
+7. You should see the selected devices listed having a status of **Enabled**.
 
    ![Devices in the Device ID list have a status of either enabled or disabled.](media/iot-hub-iot-devices-list.png 'Device ID list')
 
@@ -639,7 +647,7 @@ Fabrikam would like to visualize the "hot" data showing the average temperature 
 10. Once authorized, enter the following:
 
     - **Output alias**: Set to `powerbi`
-    - **Group Workspace**: Select the default, **My Workspace**.
+    - **Group Workspace**: Select the default, **My workspace**.
     - **Authentication mode**: Select **User token**.
     - **Dataset Name**: Enter `avgtemps`
     - **Table Name**: Enter `avgtemps`
@@ -727,7 +735,7 @@ Fabrikam would like to visualize the "hot" data showing the average temperature 
 
     ![Under File, Save is highlighted.](media/power-bi-save-report.png 'Save report')
 
-12. Enter the name `Average Temperatures`, and select **Save**.
+12. Enter the name `Average Temperatures` and select **Save**.
 
     ![The report name is set to Average Temperatures.](./media/power-bi-save-report-average-temperatures.png 'Save your report')
 
@@ -758,9 +766,9 @@ Fabrikam would like to be able to capture all the "cold" data into scalable stor
 
    ![The Create storage account blade is displayed, with the previously mentioned settings entered into the appropriate fields.](media/storage-account-create-new.png 'Create storage account')
 
-3. Select the **Advanced** tab, select the following:
+3. Select the **Advanced** tab, verify the following:
 
-   - **Secure transfer required**: Unchecked.
+   - **Require secure transfer for REST API operations**: Unchecked.
 
    ![The Create storage account blade is displayed with options under the Advanced tab.](media/storage-account-create-new-advanced.png 'Create storage account - Advanced')
 
@@ -768,9 +776,9 @@ Fabrikam would like to be able to capture all the "cold" data into scalable stor
 
 5. Once validation has passed, select **Create**.
 
-6. Once provisioned, navigate to your storage account, select **Access keys** from the left-hand menu, and copy the **key1** Key value into a text editor, such as Notepad, for later use.
+6. Once provisioned, navigate to your storage account, select **Access keys** from the left-hand menu, select **Show keys** from the top toolbar, then copy the **key1** Key value into a text editor, such as Notepad, for later use.
 
-   ![The Access Keys blade is displayed and the key1 copy button is highlighted.](media/storage-account-key.png 'Storage account - Keys')
+   ![The Access Keys blade is displayed with the key1 copy button is highlighted.](media/storage-account-key.png 'Storage account - Keys')
 
 ### Task 2: Create the Stream Analytics job for cold path processing
 
@@ -914,6 +922,8 @@ In this task, you will create a new Databricks notebook to perform some processi
 
 2. On the **Azure Databricks** landing page, create a new notebook by selecting **New Notebook** under **Common Tasks**.
 
+    ![The Azure Databricks landing page displays with New Notebook highlighted beneath the Common Tasks heading.](media/dbrix_commontasks_newnotebook.png "New Notebook")
+
 3. In the **Create Notebook** dialog, enter `smartmeters` as the **Name** and select **Python** as the **Language**, then select **Create**.
 
    ![In the Create Notebook dialog, smartmeters is entered as the Name, and Python is selected in the Language drop down.](media/azure-databricks-create-notebook-dialog.png 'Create Notebook dialog')
@@ -960,7 +970,7 @@ In this task, you will create a new Databricks notebook to perform some processi
 
 11. Run the cell.
 
-12. **Insert a new cell** into the notebook, and paste the following code to mount your blob storage account into Databricks File System (DBFS), then **run** the cell.
+12. **Insert a new cell** into the notebook and paste the following code to mount your blob storage account into Databricks File System (DBFS), then **run** the cell.
 
     ```python
     # Mount the blob storage account at /mnt/smartmeters. This assumes your container name is smartmeters, and you have a folder named smartmeters within that container, as specified in the exercises above.
@@ -1010,7 +1020,7 @@ In this task, you will create a new Databricks notebook to perform some processi
     df.write.mode("overwrite").saveAsTable("SmartMeters")
     ```
 
-19. Now, you will use the `%sql` magic command to change the language of the next cell to **SQL** from the notebook's default language, Python, then execute a SQL command to aggregate the SmartMeter data by average temperature. Paste the following code into **a new cell**, and **run** the cell.
+19. Now, you will use the `%sql` magic command to change the language of the next cell to **SQL** from the notebook's default language, Python, then execute a SQL command to aggregate the SmartMeter data by average temperature. Paste the following code into **a new cell** and **run** the cell:
 
     ```sql
     %sql
@@ -1112,6 +1122,413 @@ In this task, you will leave the simulator running and separately launch the con
 
 6. In the console window, you can enter `Y` to send another message. Experiment with setting the temperature on other devices and observe the results.
 
+## Exercise 6: Implement an IoT Edge Gateway
+
+Duration: 80 minutes
+
+An IoT Edge Gateway device provides a connection between other devices on the network and the IoT Hub. Edge Gateway devices can be classified as a transparent or translation gateway.
+
+In a transparent gateway scenario, the IoT Edge hub module itself acts as IoT Hub, it handles connections from other devices that have an identity with the same IoT hub. This type of gateway pattern is called transparent because messages pass from downstream devices to the IoT Hub as though there were not a gateway between them.
+
+A translation gateway provides a connection to the IoT hub for devices that don't or can't connect to IoT Hub on their own, such as with devices that communicate over Bluetooth or Zigbee. This type of gateway pattern is called translation because the IoT Edge device has to perform processing on incoming device messages before they can be forwarded to the IoT Hub. These scenarios require additional modules on the IoT Edge gateway to handle the messaging protocol translation..
+
+The transparent and translation gateway patterns are not mutually exclusive. A single IoT Edge device can function as both a transparent gateway and a translation gateway.
+
+In one customer building, Fabrikam would like to establish a transparent IoT Edge Gateway to provide downstream device isolation and to deal with isolated internet outages. In this scenario, all communication from the building's IoT devices will be sent to IoT Hub via the gateway device, and when there is no internet connection, all telemetry will be held by the gateway device until connectivity is restored.
+
+In this exercise, you will establish the LabVM as an IoT Edge transparent gateway and configure IoT devices to communicate through the gateway.
+
+### Task 1: Provision the IoT Edge device with the Azure IoT Hub Device Provisioning Service (DPS)
+
+Earlier in the lab we provisioned smart meter devices at scale using an enrollment group with the Azure IoT Hub Device Provisioning Service (DPS). In this task, we will provision LabVM as an IoT Edge device using an individual enrollment. We will continue to use symmetric key attestation.
+
+>**Note**: Device attestation using a TPM or X.509 certificates is more secure and should be used for more stringent security requirements in production environments.
+
+1. In the Azure Portal, open the lab resource group and select the **smartmeter-dps-{suffix}** device provisioning service resource.
+
+2. From the left menu of the DPS, select **Manage enrollments**. Then, from the toolbar menu, select **+ Add individual enrollment**.
+
+    ![The DPS resource screen displays with Manage enrollments selected from the left menu and the + Add individual enrollment menu item highlighted in the toolbar menu.](media/dps_individualenrollmentmenu.png "DPS add individual enrollment")
+
+3. In the **Add Enrollment** form, populate the following values (leaving the rest as their defaults), then press **Save**.
+
+    | Field | Value |
+    |-------|-------|
+    | Mechanism | Select **Symmetric Key**. |
+    | Registration ID | Enter `edge-vm-{SUFFIX}`. |
+    | IoT Edge device | Select **True** |
+
+    ![The Add Enrollment form displays populated with the preceding values.](media/dps_individualenrollment_edgeform.png "Add Enrollment")
+
+4. On the **Manage enrollments** screen, select the **Individual Enrollments** tab, then select the **edge-vm-{SUFFIX}** registration entry.
+
+    ![The Manage enrollments screen displays with the Individual Enrollments tab selected. The list of individual enrollments displays with edge-vm-{SUFFIX} selected.](media/dps_individualenrollments_list.png "Individual Enrollments")
+
+5. On the edge-vm-{SUFFIX} Enrollment Details screen, copy and record the Primary Key value to a text editor.
+
+    ![The edge-vm-{SUFFIX} Enrollment Details screen displays with the copy button highlighted next to the Primary Key value.](media/labvmenrollmentdetails.png "edge-vm-{SUFFIX} Enrollment Details")
+
+### Task 2: Deploy a Linux server as an IoT Edge device
+
+The IoT Edge runtime can be installed on various form factors, from small development boards like the Raspberry Pi to industrial-sized servers. Fabrikam desires to deploy a Linux Virtual Machine to serve as the IoT Edge Gateway device.
+
+1. In the Azure Portal, open the lab resource group and select **+ Create** from the toolbar menu.
+
+2. In the Search services and marketplace text box, enter and select `Ubuntu Server 18.04 LTS` from the suggestion list. Then on the resource screen, select **Create**.
+
+3. In the **Create a virtual machine** blade, fill the form as follows then select **Review + create**. Fields that are not specified can retain their default values.
+
+    | Field | Value |
+    |-------|-------|
+    | Virtual machine name | Enter `edge-vm-{SUFFIX}`. |
+    | Authentication type | Select **Password**. |
+    | Username | Enter `demouser`. |
+    | Password | Enter `Password.1!!`. |
+    | Confirm password | Enter `Password.1!!`.|
+
+    ![The Create a virtual machine form displays populated with the aforementioned values.](media/createedgevmblade.png "Create a virtual machine")
+
+4. Once deployment has completed, open the newly deployed **edge-vm-{SUFFIX}** resource and record the Public IP address value in a text editor.
+
+    ![The Virtual machine overview is displayed with the Public IP address value highlighted.](media/ubuntuvm_publicipaddress.png "Virtual machine Overview")
+
+5. To setup a host name for the IoT Edge device, select the **Not configured** link next to the **DNS name** field.
+
+    ![The edge-vm screen displays with the Not configured link highlighted next to the DNS name label.](media/iotedge_hostnamenotconfigured.png "Host name not configured")
+
+6. On the **edge-vm-{SUFFIX}-ip** Configuration screen, provide the DNS name label **edge-vm-{SUFFIX}**. It is important that this value matches the registration ID of the device in DPS. Select **Save**.
+
+    ![The edge-vm-ip Configuration screen displays with the DNS label set to edge-vm-suffix and the save button is highlighted in the toolbar menu.](media/iotedge_sethostname_portal.png "edge-vm-ip Configuration")
+
+7. Wait a few moments, then return to the **edge-vm-{SUFFIX}** Overview screen and select **Refresh** from the toolbar menu. The DNS name value should now be populated with the label you assigned in the previous step.
+
+   ![A portion of the edge-vm Overview screen displays with the DNS name value populated.](media/iotedge_dnsnamepopulated.png "Host name is configured")
+
+8. In the upper right menu of the Azure Portal, open a cloud shell instance selecting **Bash** as the language of choice.
+
+    ![The Azure Portal displays with the cloud shell icon highlighted in the top-right toolbar menu and Bash selected as the language.](media/cloudshell.png "Azure Portal Cloud Shell")
+
+9. In the cloud shell, we will SSH into the virtual machine using the IP you recorded. At the Bash prompt, execute the following command, replacing {ipAddress} with the appropriate value.
+
+    ```Bash
+    ssh demouser@{ipAddress}
+    ```
+
+10. If prompted to trust the fingerprint, enter `yes`.
+
+11. When prompted for a password, enter `Password.1!!`.
+
+12. You are now connected to the virtual machine; you can tell by the prompt changing to **demouser@edge-vm-{SUFFIX}**. All commands executed will now be run on the virtual machine.
+
+    ![The Bash prompt displays demouser@edge-vm-{SUFFIX}.](media/bash_demouserprompt.png "Bash prompt")
+
+13. Install the Microsoft installation packages repository configuration by executing the following.
+
+    ```Bash
+    curl https://packages.microsoft.com/config/ubuntu/18.04/multiarch/prod.list > ./microsoft-prod.list
+    ```
+
+14. Copy the generated list to the sources.list.d directory by issuing the following command.
+
+    ```Bash
+    sudo cp ./microsoft-prod.list /etc/apt/sources.list.d/
+    ```
+
+15. Install the Microsoft GPG public key.
+
+    ```Bash
+    curl https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > microsoft.gpg
+    ```
+
+16. Copy the key to the trusted location by executing the following command.
+
+    ```Bash
+    sudo cp ./microsoft.gpg /etc/apt/trusted.gpg.d/
+    ```
+
+17. Now that the Microsoft package feed has been added and trusted, update the device package list by executing the following command.
+
+    ```Bash
+    sudo apt-get update
+    ```
+
+18. Install the Moby container engine by issuing the following command. When prompted to continue, enter `Y`. This container engine will be used to run IoT Edge modules in the form of Docker containers.
+
+    ```Bash
+    sudo apt-get install moby-engine
+    ```
+
+19. Install the IoT Edge runtime by executing the following command. When prompted to continue, enter `y`.
+
+    ```Bash
+    sudo apt-get install aziot-edge
+    ```
+
+20. Create a configuration file from a template that will contain the device identity and Device Provisioning Service information by executing the following command.
+
+    ```Bash
+    sudo cp /etc/aziot/config.toml.edge.template /etc/aziot/config.toml
+    ```
+
+21. Edit the newly created configuration file by issuing the following command.
+
+    ```Bash
+    sudo nano /etc/aziot/config.toml
+    ```
+
+22. Using the arrow keys on the keyboard, locate and uncomment the **hostname** variable. Set its value to the host name you assigned to edge-vm.
+
+    ![A portion of the IoT Edge configuration file is open in nano where the hostname value is set accordingly.](media/iotedge_config_sethostname.png "IoT Edge configuration")
+
+23. Keeping the configuration file open in nano, find the location of the DPS provisioning with symmetric key section. Uncomment and modify the id_scope, registration id (edge-vm), and symmetric_key (individual device enrollment primary key) values, then exit with saving the file (Ctrl+X, then Y, then press enter).
+
+    ![The IoT Edge configuration file is open in nano with the variables mentioned above replaced accordingly.](media/iotedge_dpsconfig.png "IoT Edge configuration")
+
+24. Apply the configuration changes by executing the following command.
+
+    ```Bash
+    sudo iotedge config apply
+    ```
+
+25. Verify the installation by checking the status of the IoT Edge service.
+
+    ```Bash
+    sudo iotedge system status
+    ```
+
+26. Discover installed IoT Edge modules. The **edgeAgent** module should be listed with a status of **running**.
+
+    ```Bash
+    sudo iotedge list
+    ```
+
+    ![A Bash window displays with the sudo iotedge list command executed. The edgeAgent module displays as running.](media/iotedge_edgelist_agentrunning.png "IoT Edge module listing")
+
+27. In the Azure Portal, open the lab resource group and select the **smartmeter-hub-{SUFFIX}** IoT Hub. Verify the IoT Edge device successfully registered through the DPS by selecting **IoT Edge** from the left menu and finding **edge-vm-{SUFFIX}** in the listing.
+
+    ![The IoT Hub screen displays with IoT Edge selected from the left menu and edge-vm highlighted in the IoT Edge Devices listing.](media/iothub_edgevm.png "Azure IoT Edge Devices Listing")
+
+28. In order for downstream devices to communicate with the IoT Edge Gateway using the AMQP protocol, port 5671 needs to be opened in the Ubuntu firewall. Open port 5671 by executing the following command in the cloud shell.
+
+    ```Bash
+    sudo ufw allow 5671
+    ```
+
+29. Keep the cloud shell window open and connected to the edge-vm via ssh for the next task.
+
+30. In the Azure Portal, open the lab resource group and select the **edge-vm-{SUFFIX}-nsg** Network security group.
+
+31. From the left menu, select **Inbound security rules**, then **+ Add**.
+
+    ![The edge-vm-nsg resource screen displays with Inbound security rules selected from the left menu and the + Add button highlighted in the toolbar menu.](media/nsg_inbound_addmenu.png "Inbound network security rules")
+
+32. In the **Add inbound security rule** blade, fill the form as follows and select **Add**. Fields not mentioned retain their default value.
+
+    | Field | Value |
+    |-------|-------|
+    | Destination port ranges | Enter `5671`. |
+    | Name | Enter `AMQP`. |
+
+    ![The Add inbound security rule blade displays populated with the aforementioned values.](media/addinboundruleform.png "Add inbound security rule")
+
+### Task 3: Generate test certificates for downstream device connectivity
+
+It is a requirement that downstream devices authenticate to the [IoT Edge Gateway using certificates](https://docs.microsoft.com/en-us/azure/iot-edge/how-to-create-transparent-gateway). In this task, you will create test certificates and ensure proper authentication between downstream devices and the gateway device.
+
+1. The Azure/iotedge GitHub project contains scripts to generate non-production certificates. Clone the repository by executing the following command:
+
+   ```Bash
+   git clone https://github.com/Azure/iotedge.git
+   ```
+
+2. Create a directory to hold the necessary certificates.
+
+    ```Bash
+    mkdir certificates
+    ```
+
+3. Move to the new directory.
+
+    ```Bash
+    cd certificates
+    ```
+
+4. Copy the necessary scripts from the GitHub repository.
+
+    ```Bash
+    cp ../iotedge/tools/CACertificates/*.cnf .
+    ```
+
+    then
+
+    ```Bash
+    cp ../iotedge/tools/CACertificates/certGen.sh .
+    ```
+
+5. Leverage the helper script to generate the root CA certificate and one intermediate certificate.
+
+   ```Bash
+   ./certGen.sh create_root_and_intermediate
+   ```
+
+6. Leverage the helper script to create the IoT Edge device CA certificate.
+
+   ```Bash
+   ./certGen.sh create_edge_device_ca_certificate "edgevmca"
+   ```
+
+7. Once more we will edit the IoT Edge configuration to configure the generated certificates.
+
+    ```Bash
+    sudo nano /etc/aziot/config.toml
+    ```
+
+8. Locate the **trust_bundle_cert** parameter, uncomment and set the value as follows.
+
+    ```Bash
+    trust_bundle_cert = "file:///home/demouser/certificates/certs/azure-iot-test-only.root.ca.cert.pem"
+    ```
+
+9. Continuing in the same file, locate the **\[edge_ca\]** section, uncomment and replace the values as follows, then save and exit while saving the file (Ctrl+X, then Y, then press enter):
+
+    ```Bash
+    [edge_ca]
+    cert: "file:///home/demouser/certificates/certs/iot-edge-device-ca-edgevmca-full-chain.cert.pem"
+    pk: "file:///home/demouser/certificates/private/iot-edge-device-ca-edgevmca.key.pem"
+    ```
+
+10. Apply the configuration changes by executing the following command.
+
+    ```Bash
+    sudo iotedge config apply
+    ```
+
+11. Exit the SSH session by executing the following command:
+
+    ```Bash
+    exit
+    ```
+
+12. Next, create a **certificates** directory and download the IoT Edge certificates to the cloud shell storage.
+
+    ```Bash
+    mkdir ~/certificates
+    ```
+
+    Followed by the secure copy command (replacing {edgeVMIp} with the IP address of the IoT Edge device):
+
+    ```Bash
+     scp -r -p demouser@{edgeVmIp}:~/certificates ~/certificates
+    ```
+
+    You will be prompted for the password: `Password.1!!`.
+
+13. Download the root certificate to a known location by selecting the **Upload/Download files** button on the cloud shell toolbar menu and chooseg **Download** from the expanded menu options.
+
+    ![The cloud shell toolbar displays with the Upload/Download files button highlighted.](media/cloudshell_downloaduploadbutton.png "Cloud shell toolbar")
+
+14. In the **Download a file** dialog, set the path to the following value, this will download the file from the browser. We will be using this file later in this lab.
+
+    ```Bash
+    /certificates/certs/azure-iot-test-only.root.ca.cert.pem
+    ```
+
+### Task 4: Configure the IoT Edge Device as a Gateway in IoT Hub
+
+To configure edge-vm as an IoT Edge Gateway the $edgeHub IoT Edge module needs to be configured by having its routing defined. The route defined will be setup to forward all downstream device messages to IoT Hub. IoT Edge modules can be configured and deployed to devices via the IoT Hub.
+
+1. In the Azure Portal, open the lab resource group and select the **smartmeter-hub-{SUFFIX}** IoT Hub resource.
+
+2. From the left menu, select **IoT Edge**, then select **edge-vm-{SUFFIX}** from the list of devices. Notice that the IoT Edge Runtime response indicates the deployment configuration is not set, and the $edgeHub module is not running - this will soon change.
+
+3. On the **edge-vm-{SUFFIX}** screen, select **Set modules** from the top toolbar menu.
+
+    ![The edge-vm screen displays with the Set modules button highlighted in the toolbar menu.](media/iotedge_setmodules.png "Set IoT Edge modules")
+
+4. On the **Set modules on device: edge-vm-{SUFFIX}** screen, select the **Routes** tab and establish the following route. Once complete, select **Review + Create**, then **Create** on the review screen.
+
+   | Route Name | Route Value | Description |
+   |------------|-------------|-------------|
+   | allDownstreamToIoTHub |FROM /messages/* WHERE NOT IS_DEFINED ($connectionModuleId) INTO $upstream | When a message is received from a downstream device, the $connectionModuleId value is blank. The $connectionModuleId value is only set on messages originating from other IoT Edge modules. This route value filters all messages and forwards on those originating from downstream devices. |
+
+    ![The Set Modules screen displays with the Routes tab selected and the preceding route.](media/iotedge_setmodules_routes.png "IoT Edge Routes")
+
+5. Wait a few moments and refresh the **edge-vm-{SUFFIX}** screen. Note that the IoT Edge Runtime Response now displays **200 -- OK** and the $edgeHub module is now running (you may need to refresh a few times to see the $edgeHub module running successfully).
+
+    ![The edge-vm screen displays with the IoT Edge Runtime Response displaying a status of 200 and the $edgeHub module displays as running.](media/iotedge_runtime200_edgehubrunning.png "edge-vm status")
+
+### Task 5: Update the device client to communicate through the IoT Edge Gateway
+
+Individual downstream device clients need to be configured to communicate directly through the IoT Edge Gateway device rather than to the IoT Hub directly. In this task, the meters located in the second (right) building of the simulator will be configured to send telemetry through the IoT Edge transparent gateway. These are Devices 7, 8, and 9.
+
+1. In the Azure Portal, open the lab resource group and locate and select the **smartmeter-hub-{SUFFIX}** IoT Hub.
+
+2. From the left menu, select **IoT devices**.
+
+3. From the list of IoT devices, select **Device7**.
+
+   ![The smartmeter-hub-{SUFFIX} IoT devices screen displays with IoT devices selected in the left menu and Device7 highlighted in the list of devices.](media/iotdevices_list_device7.png "IoT devices list")
+
+4. Assign **edge-vm-{SUFFIX}** as the parent device. This will allow this device to communicate through the IoT Edge transparent gateway. Select the cog icon next to the **Parent device** field.
+
+    ![The IoT device screen displays with the cog icon selected next to the Parent device field label.](media/device_setparentdevice_cog.png "IoT device details")
+
+5. On the **Set an IoT Edge device as parent device** screen, select **edge-vm-{SUFFIX}** from the listing, then select **OK**.
+
+    ![The Set an IoT Edge device as parent device screen displays with edge-vm-{SUFFIX} selected and the OK button is highlighted.](media/iotedge_setparent_selection.png "IoT Edge parent device selection")
+
+6. Select **Save** on the IoT Device screen to commit the changes.
+
+    ![The IoT device screen displays with the Save button selected in the toolbar menu. The populated Parent device field is highlighted.](media/iothub_devicescreen_save.png "Save IoT device settings")
+
+7. Repeat steps 1-6 for **Device8** and **Device9**.
+
+8. In Visual Studio, open the **Sensor.cs** file from within the SmartMeterSimulator.
+
+9. Locate the line **//TODO: 6. Connect the Device to Iot Hub by creating an instance of DeviceClient** and add the gateway hostname as the second parameter. This parameter will route all messages to the IoT Edge Gateway.
+
+    ![A code snippet displays with the IoT Edge Gateway hostname string value highlighted.](media/deviceconnectiontogatewayip.png "IoT Edge Gateway connectivity")
+
+10. Locate **//TODO: 12 - Install and trust IoT Edge Gateway root certificate** in the DeviceManager.cs file and replace it with the following listing. This code will trust the root certificate of the IoT Edge gateway device. Replace {CERTPATH} with the full path to the certificate you downloaded from the cloud shell earlier. This method is called every time the application is run (MainForm.cs in the MainForm constructor).
+
+    ```C#
+    //TODO: 12 - Install and trust IoT Edge Gateway root certificate
+    string trustedCACertPath = @"{CERTPATH}";
+    if (!string.IsNullOrWhiteSpace(trustedCACertPath))
+    {
+        if (!File.Exists(trustedCACertPath))
+        {
+            // cannot proceed further without a proper cert file                    
+            throw new InvalidOperationException("Invalid certificate file.");
+        }
+        else
+        {
+            X509Store store = new X509Store(StoreName.Root, StoreLocation.CurrentUser);
+            store.Open(OpenFlags.ReadWrite);
+            store.Add(new X509Certificate2(X509Certificate.CreateFromCertFile(trustedCACertPath)));
+            store.Close();
+        }
+    }
+    ```
+
+11. Run the application, select all three windows in the second building (on the right in the simulator) and choose **Register**. Once the windows display as cyan, select the **Connect** button for the devices to start sending telemetry through the IoT Edge Gateway.
+
+    ![The Smart Meter Simulator displays with multiple smart meters sending telemetry."](media/smartmetersim_registerandconnect.png "Smart Meter Simulator")
+
+    >**Note**: You may be prompted to install the IoT Edge Gateway certificate, select **Yes** if this occurs.
+
+    ![A Security Warning dialog displays regarding installation of a certificate.](media/osinstallcertificate.png "Security Warning dialog")
+
+12. Now it's time to verify telemetry is being sent to IoT Hub. In Visual Studio, expand the **View** menu and choose **Cloud Explorer**.
+
+13. Expand the subscription being used for this lab and expand the **IoT Hubs** node. Right-click on **smartmeter-hub-{SUFFIX}** to display the context menu and select the **Start Monitoring Built-in Event Endpoint** item.
+
+    ![The Cloud Explorer displays with a subscription expanded along with the IoT Hubs node. The smartmeter-hub-{SUFFIX} has its context menu expanded with the Start Monitoring Built-in Event Endpoint item selected.](media/cloudexplorer_iothubcontextmenu.png "Monitor Built-in Event Endpoint")
+
+14. The **Output** panel will start displaying IoT Hub events including telemetry events.
+
+    ![The Output pane displays with incoming telemetry events.](media/output_iothubevents.png "IoT Hub Output")
+
 ## After the hands-on lab
 
 Duration: 10 mins
@@ -1124,6 +1541,6 @@ In this exercise, you will delete any Azure resources that were created in suppo
 
 2. Search for the name of your research group and select it from the list.
 
-3. Select Delete in the command bar and confirm the deletion by re-typing the Resource group name, and selecting Delete.
+3. Select Delete in the command bar and confirm the deletion by re-typing the Resource group name and selecting Delete.
 
 You should follow all steps provided _after_ attending the Hands-on lab.

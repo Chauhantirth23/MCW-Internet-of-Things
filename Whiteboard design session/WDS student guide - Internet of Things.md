@@ -9,7 +9,7 @@ Whiteboard design session student guide
 </div>
 
 <div class="MCWHeader3">
-June 2021
+October 2021
 </div>
 
 Information in this document, including URL and other Internet Web site references, is subject to change without notice. Unless otherwise noted, the example companies, organizations, products, domain names, e-mail addresses, logos, people, places, and events depicted herein are fictitious, and no association with any real company, organization, product, domain name, e-mail address, logo, person, place or event is intended or should be inferred. Complying with all applicable copyright laws is the responsibility of the user. Without limiting the rights under copyright, no part of this document may be reproduced, stored in or introduced into a retrieval system, or transmitted in any form or by any means (electronic, mechanical, photocopying, recording, or otherwise), or for any purpose, without the express written permission of Microsoft Corporation.
@@ -44,7 +44,7 @@ In this whiteboard design session, you will work with a group to design an imple
 
 At the end of this whiteboard design session, you will be better able to design an IoT solution implementing device registration with the IoT Hub Device Provisioning Service and visualizing hot data with Power BI.
 
-## Step 1: Review the customer case study
+## Step 1: Review the customer case study 
 
 **Outcome**
 
@@ -54,11 +54,11 @@ Timeframe: 15 minutes
 
 Directions: With all participants in the session, the facilitator/SME presents an overview of the customer case study along with technical tips.
 
-1. Meet your table participants and trainer.
+1. Meet your team members and trainer.
 
-2. Read all of the directions for steps 1-3 in the student guide.
+2. Read all directions for steps 1-3 in the student guide.
 
-3. As a table team, review the following customer case study.
+3. As a team, review the following customer case study.
 
 ### Customer situation
 
@@ -94,6 +94,10 @@ In addition to collecting telemetry, Fabrikam not only seeks to gain competitive
 
 6. We want to understand the ways in which we can scale the solution to accommodate future growth in terms of number of customers, meters, and the size of the data.
 
+7. We want the ability to monitor and visualize our entire IoT solution, including querying the current state of deployed assets.
+
+8. We want the ability to identify the physical location of IoT devices in each building to identify usage trends and to locate devices should physical maintenance be required.
+
 ### Customer objections
 
 1. We are considering an out-of-the-box time series database solution. Are there options for this on Azure?
@@ -105,6 +109,8 @@ In addition to collecting telemetry, Fabrikam not only seeks to gain competitive
 4. We have heard of Azure IoT Central; does this offer a good starting point for us?
 
 5. Some of our customers require their IoT devices to communicate in a firewall-friendly way without opening up additional incoming or outgoing ports. What options do we have to accomplish this?
+
+6. We need a way to query all IoT devices based on their current properties and relationships. How can we accomplish this?
 
 ### Infographic of common scenarios
 
@@ -120,15 +126,15 @@ Timeframe: 60 minutes
 
 **Business needs**
 
-Directions: With all participants at your table, answer the following questions and list the answers on a flip chart:
+Directions: With your team, answer the following questions and be prepared to present your solution to others:
 
-1. Who should you present this solution to? Who is your target customer audience? Who are the decision makers?
+1. Who will you present this solution to? Who is your target customer audience? Who are the decision makers?
 
 2. What customer business needs do you need to address with your solution?
 
 **Design**
 
-Directions: With all participants at your table, respond to the following questions on a flip chart:
+Directions: With your team, respond to the following questions:
 
 _High-level architecture_
 
@@ -147,6 +153,8 @@ _Device to cloud communication_
    - What is the format of the message sent to the ingest endpoint?
 
    - What service endpoints do the devices talk to?
+
+4. Some IoT devices may not have the capability to connect to Azure directly, what is a possible solution to this problem?
 
 _Device provisioning_
 
@@ -172,6 +180,10 @@ The "hot" path for Fabrikam is defined as the processing of the data as it arriv
 
    - Estimate the write throughput you would require. Does your selected store support it?
 
+5. How does your solution support ad-hoc queries of the real-time state of devices across the solution?
+
+6. What Azure service do you recommend to create building maps to pinpoint the location of deployed IoT devices?
+
 _"Cold" path processing_
 
 The "cold" path for Fabrikam is highlighted by the notion that Fabrikam does not want to lose any telemetry data from its devices, so it can be prepared to ask new questions of the data over time in the future. The second requirement is to support the calculation of period over period reports for each meter (for example, year over year, month over month, and week over week). For each new full day of data added, it amounts to updating the summary statistics for the current year, current month, and current week with a three-number summary consisting of minimum, mean, and maximum. Fabrikam would prefer the implementation of these reports to be done using syntax similar to SQL. Assume you want to create the summary statistics for each device by year.
@@ -188,7 +200,7 @@ _Cloud to device communication_
 
 **Prepare**
 
-Directions: With all participants at your table:
+Directions: As a team:
 
 1. Identify any customer needs that are not addressed with the proposed solution.
 
@@ -210,9 +222,9 @@ Timeframe: 30 minutes
 
 Directions:
 
-1. Pair with another table.
+1. Pair with another team.
 
-2. One table is the Microsoft team and the other table is the customer.
+2. One group is the Microsoft team, the other is the customer.
 
 3. The Microsoft team presents their proposed solution to the customer.
 
@@ -222,21 +234,24 @@ Directions:
 
 6. The customer team gives feedback to the Microsoft team.
 
-7. Tables switch roles and repeat Steps 2-6.
+7. Switch roles and repeat Steps 2-6.
 
-## Wrap-up
+##  Wrap-up 
 
 Timeframe: 15 minutes
 
-Directions: Tables reconvene with the larger group to hear the facilitator/SME share the preferred solution for the case study.
+Directions: Reconvene with the larger group to hear the facilitator/SME share the preferred solution for the case study.
 
 ## Additional references
 
 |                         |                                                                                       |
 | ----------------------- | ------------------------------------------------------------------------------------- |
 | **Description**         | **Links**                                                                             |
+| IoT for Beginners | <https://github.com/microsoft/IoT-For-Beginners> |
 | IoT Hubs                | <https://azure.microsoft.com/documentation/articles/iot-hub-devguide/>                |
 | IoT Hub Message Routing | <https://docs.microsoft.com/azure/iot-hub/tutorial-routing>                           |
+| IoT Edge | <https://docs.microsoft.com/en-us/azure/iot-edge/about-iot-edge> |
+| IoT Edge Gateways | <https://docs.microsoft.com/en-us/azure/iot-edge/iot-edge-as-gateway> |
 | Event Hubs              | <https://azure.microsoft.com/documentation/articles/event-hubs-overview/>             |
 | Stream Analytics        | <https://azure.microsoft.com/documentation/articles/stream-analytics-introduction/>   |
 | Data Factory            | <https://azure.microsoft.com/documentation/articles/data-factory-introduction/>       |
@@ -244,3 +259,10 @@ Directions: Tables reconvene with the larger group to hear the facilitator/SME s
 | Hive                    | <https://azure.microsoft.com/documentation/articles/hdinsight-use-hive/>              |
 | Spark                   | <https://azure.microsoft.com/documentation/articles/hdinsight-apache-spark-overview/> |
 | Azure Databricks        | <https://azure.microsoft.com/services/databricks/>                                    |
+| Azure Digital Twins     | <https://docs.microsoft.com/en-us/azure/digital-twins/overview> |
+| Query the Azure Digital Twins twin graph | <https://docs.microsoft.com/en-us/azure/digital-twins/how-to-query-graph> |
+| Azure Maps Indoor Maps Module | <https://docs.microsoft.com/en-us/azure/azure-maps/how-to-use-indoor-module> |
+| MCW Leveraging Azure Digital Twins in a supply chain | <https://github.com/microsoft/MCW-Leveraging-Azure-Digital-Twins-in-a-supply-chain> |
+| MCW Predictive Maintenance for remote field devices | <https://github.com/microsoft/MCW-Predictive-Maintenance-for-remote-field-devices> |
+| MCW Securing Azure IoT Solutions | <https://github.com/microsoft/MCW-Securing-Azure-IoT-solutions> |
+| Energy architectures | <https://docs.microsoft.com/en-us/azure/architecture/browse/?terms=energy> |

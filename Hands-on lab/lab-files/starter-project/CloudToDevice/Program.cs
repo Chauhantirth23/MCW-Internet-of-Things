@@ -37,10 +37,10 @@ namespace CloudToDevice
             {
                 device = GetReadLineInteger("Send command to a device - Enter device number (0-9): ",
                                                      0, 9);
-                
+
                 temperature = GetReadLineDouble("Enter a temperature (F) to send (65 - 85): ",
                                                      65, 85);
-                
+
                 Console.WriteLine();
                 Console.WriteLine($"Sending temperature request of {temperature} to Device{device}");
                 await SendCloudToDeviceMessageAsync();
